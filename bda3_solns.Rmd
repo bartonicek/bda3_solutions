@@ -1,13 +1,17 @@
 ---
 title: "BDA3 Solutions"
 author: "Adam Bartonicek"
-date: "Last updated: `r Sys.Date()`"
-output: 
+date: 'Last updated: `r Sys.Date()`'
+output:
   html_document:
-    toc: true
-    toc_float: true
-editor_options: 
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+editor_options:
   chunk_output_type: console
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -23,33 +27,651 @@ colt <- function(colour, alpha) {
 
 ```
 
+# Chapter 2
+
+## 2.1 Binomial: unknown number of hits
+
+We have a $\text{Beta}(4, 4)$ prior, toss a coin ten times, and observe
+fewer than 3 heads (but we don't know the exact number of heads).
+
+$$p(\theta) \propto \theta^{4 - 1} (1 - \theta)^{4-1}$$
+$$p(y \lvert \theta) = {10 \choose 0} \theta^0 (1 - \theta)^{10} + {10 \choose 1} \theta^1 (1 - \theta)^9 + {10 \choose 2} \theta^2 (1 - \theta)^8$$
+$$= (1 - \theta)^{10} + 10\theta (1 - \theta)^9 + 45 \theta^2 (1 - \theta)$$
+
+ 
+
+$$p(\theta \lvert y) = [(1 - \theta)^{10} + 10\theta (1 - \theta)^9 + 45 \theta^2 (1 - \theta)] \cdot \theta^3(1 - \theta)^3$$
+$$= \theta^3(1 - \theta)^{13} + 10 \theta^4(1 - \theta)^{12} + 45 \theta^5 (1 - \theta)^{11}$$
+
+Plot the posterior:
+
+```{r}
+
+theta <- seq(0, 1, 0.01)
+
+post <- theta^3 * (1 - theta)^13 + 10 * theta^4 * (1 - theta)^12 + 
+  45 * theta^5 * (1 - theta)^11 
+post <- post/sum(post)
+
+plot(theta, post, type = 'l', col = 'steelblue',
+     axes = FALSE, lwd = 2,
+     xlab = expression(theta), ylab = 'Density')
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+## 2.2 Binomial: posterior predictive expectation
+
+We randomly select one of two coins, with equal probability. One coin
+has 0.6 probability of landing heads, the other has 0.4 probability of
+landing heads. We toss the coin two times and observe two tails. What's
+the posterior expectation of the number of further tosses until we get a
+head?
+
+$$P(C_1) = P(C_2) = \frac{1}{2}$$
+$$C_1: \; \theta = 0.6; \qquad C_2: \; \theta = 0.4$$
+$$p(y = 0 \lvert \theta) = \begin{cases} 0.6^0 (1 - 0.6)^2 = 0.4^2 & \text{if } \theta = 0.6 \\ 0.4^0 (1 - 0.4)^2 = 0.6^2 & \text{if } \theta = 0.4  \end{cases}$$
+$$p(\theta_i \lvert y) = \begin{cases} \frac{0.4^2}{0.4^2 + 0.6^2} \approx 0.308 & \text{for } \theta_i = 0.6 \\ 
+\frac{0.6^2}{0.4^2 + 0.6^2} \approx 0.682 & \text{for } \theta_i = 0.4  \end{cases}  $$
+
+ 
+
+$$E(\tilde y \lvert y) = \sum_{i = 1}^2 \sum_{j=0}^\infty p(\tilde y \lvert \theta_i) p(\theta_i \lvert y) = \sum_{i = 1}^2 p(\tilde y \lvert \theta_i) \sum_{j=0}^\infty j \cdot p(\theta_i \lvert y)$$
+$$= \frac{0.4^2}{0.4^2 + 0.6^2} \cdot \sum_{j=0}^\infty j \cdot 0.4 (1 -0.4)^j + \frac{0.4^2}{0.6^2 + 0.6^2} \cdot \sum_{j=0}^\infty j \cdot 0.6 (1 -0.6)^j$$
+$$= \frac{0.4^2}{0.4^2 + 0.6^2} \cdot \frac{1}{0.6} + \frac{0.4^2}{0.6^2 + 0.6^2} \cdot \frac{1}{0.4} \qquad \text{(by expectation of Geometric distribution)}$$
+
+```{r}
+
+0.4^2 / (0.4^2 + 0.6^2) * (1 / 0.6) + 
+  0.6^2 / (0.4^2 + 0.6^2) * (1 / 0.4) 
+
+```
+
+## 2.3 Normal approximation: simple binomial
+
+Let $Y$ be the number of 6's in 1000 rolls of a fair die.
+
+### 2.3 (a)
+
+Approximate $p(y \lvert \theta)$ using normal distribution:
+
+$$E(Y) = np = 1000 \cdot \frac{1}{6} = 166.66 \bar 6$$
+$$Var(Y) = np(1-p) = 1000 \cdot \frac{1}{6} \cdot \frac{5}{6} = 138.88 \bar 8$$
+
+```{r}
+
+mu <- 1000 * 1/6
+sigma2 <- 1000 * 1/6 * 5/6
+  
+y <- 120:220
+
+plot(y, dnorm(y, mu, sqrt(sigma2)), 
+     type = 'l', col = 'steelblue',
+     axes = FALSE, lwd = 2,
+     xlab = 'y', ylab = 'Density')
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+### 2.3 (b)
+
+Give approximate 5%, 25%, 50%, 75% and 95% points for the distribution
+of $y$
+
+```{r}
+
+qnorm(c(0.05, 0.25, 0.5, 0.75, 0.95), mu, sqrt(sigma2))
+
+```
+
+## 2.4 Normal approximation: binomial mixture
+
+Again, we count the number of 6's in 1000 tosses of a die that may or
+may not be fair with the following prior probabilities:
+
+$$p \bigg(\theta = \frac{1}{12} \bigg) = \frac{1}{4}$$
+$$p \bigg(\theta = \frac{1}{6} \bigg) = \frac{1}{2}$$
+$$p \bigg(\theta = \frac{1}{4} \bigg) = \frac{1}{4}$$ 
+
+### 2.4 (a)
+
+Approximate $p(y \lvert \theta)$ using a normal approximation:
+
+$$p(y \lvert \theta) = \frac{1}{4} \cdot p \bigg(y \lvert \theta = \frac{1}{12} \bigg) + \frac{1}{2} \cdot p \bigg(y \lvert \theta = \frac{1}{6} \bigg) + \frac{1}{4} \cdot p \bigg(y \lvert \theta = \frac{1}{4} \bigg)$$
+
+```{r}
+
+y <- 0:400
+
+theta <- c(1/12, 1/6, 1/4)
+mu <- 1000 * theta
+sigma2 <- 1000 * theta * (1 - theta)
+
+post <- sapply(y, function(x) dnorm(x, mu, sqrt(sigma2)))
+post <- colSums(post * c(1/4, 1/2, 1/4))
+
+plot(y, post, 
+     type = 'l', col = 'steelblue',
+     axes = FALSE, lwd = 2,
+     xlab = 'y', ylab = 'Density')
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+### 2.4 (b)
+
+Give approximate 5%, 25%, 50%, 75%, and 95% points for the distribution
+of $y$. We can make use of the fact that close to 1/4 of the probability
+mass will be in the first normal hump, 1/2 will be in the second normal
+hump, and 1/4 will be in the third normal hump (since the humps share
+little overlap):
+
+```{r}
+
+q5 <- qnorm(0.2, mu[1], sqrt(sigma2[1]))
+q25 <- mu[1] + (mu[2] - mu[1]) / 2
+q50 <- qnorm(0.5, mu[2], sqrt(sigma2[2]))
+q75 <- mu[2] + (mu[3] - mu[2]) / 2
+q95 <- qnorm(0.8, mu[3], sqrt(sigma2[3]))
+
+plot(y, post, 
+     type = 'l', col = 'steelblue',
+     axes = FALSE, lwd = 2,
+     xlab = 'y', ylab = 'Density')
+abline(v = c(q5, q25, q50, q75, q95), 
+       col = 'grey60', lty = 'dashed')
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+
+```
+
+## 2.5 Posterior as compromise between prior and data
+
+Let $y$ be number of heads in $n$ spins of a coin with probability of heads $\theta$.
+
+### 2.5 (a)
+
+Assuming a $\text{Uniform}(0, 1)$ prior on $\theta$, derrive the prior predictive distribution:
+
+$$p(y = k) = \int_{0}^1 p(y = k \lvert \theta) d \theta$$
+$$= \int_0^1 {n \choose k} \theta^k (1 - \theta)^{n - k} d \theta$$
+$$= {n \choose k} \int_0^1 \theta^k (1 - \theta)^{n - k} d \theta \qquad \text{(Beta integral)}$$
+$$= \frac{n!}{k! (n - k)!} \cdot \frac{\Gamma(k + 1) \Gamma(n - k + 1)}{\Gamma(n + 2)}$$
+$$= \frac{1}{n + 1}$$
+
+### 2.5 (b)
+
+Assuming $\text{Beta}(\alpha, \beta)$ prior, show that the posterior mean lies between prior mean $\frac{\alpha}{\alpha + \beta}$ and the sample mean/MLE $\frac{y}{n}$
+
+The mean of the Beta posterior is $\frac{\alpha + y}{\alpha + \beta + n}$.
+
+$$\frac{\alpha + y}{\alpha + \beta + n} = w \cdot \frac{\alpha}{\alpha + \beta} + (1 - w) \frac{y}{n}$$
+$$\implies \frac{\alpha + y}{\alpha + \beta + n} - \frac{y}{n} = w \bigg( \frac{\alpha}{\alpha + \beta} - \frac{y}{n} \bigg)$$
+$$\implies \frac{ \alpha n + ny - \alpha y - \beta y - ny}{n(\alpha + \beta + n)} = w \cdot \bigg( \frac{\alpha n - y (\alpha + \beta)}{n(\alpha + \beta)} \bigg)$$
+$$\implies \frac{ \alpha n + - \alpha y - \beta y}{n(\alpha + \beta + n)} = w \cdot \bigg( \frac{\alpha n - \alpha y - \beta y}{n(\alpha + \beta)} \bigg)$$
+$$\implies w = \frac{\frac{n \alpha + - \alpha y - \beta y}{n(\alpha + \beta + n)}}{\frac{\alpha n - \alpha y - \beta y}{n(\alpha + \beta)}}$$
+$$\implies w = \frac{\alpha + \beta}{\alpha + \beta + n}; \qquad (1 - w) = \frac{n}{\alpha + \beta + n}$$
+Since $\alpha > 0$, $\beta > 0$ and $n \in \{1, 2, 3, \ldots \}$, $w$ will always be between 0 and 1:
+
+$$0 < w < 1; \qquad 0 < 1 - w < 1$$
+
+Thus, the posterior mean will always lie between the prior mean and the sample mean.
+
+### 2.5 (c)
+
+Show that if the prior is uniform, the posterior variance will always be smaller than the prior variance.
+
+The variance of a $\text{Beta}(\alpha, \beta)$ distribution is: $\frac{\alpha \beta}{(\alpha + \beta)^2 \cdot (\alpha + \beta + 1)}$.
+
+Therefore, with a uniform $\text{Beta}(1, 1)$ prior, the prior variance will be:
+
+$$Var(\theta) = \frac{1 \cdot 1}{(1 + 1)^2 \cdot (1 + 1 + 1)} = \frac{1}{12}$$
+The posterior variance will be:
+
+$$Var(\theta \lvert y) = \frac{(1 + y) \cdot (1 + n - y)}{(1 + y + 1 + n -y)^2 (1 + y + 1 + n - y + 1)} = \frac{(1 + y)(1 + n - y)}{(n + 2)^2 (n + 3)}$$
+Let's take the extreme case where the data is the least informative it can be: $n = 1$ and $y = 0$ (we could also do $y=1$). Then the posterior variance will be:
+
+$$Var(\theta \lvert y = 0) = \frac{(1 + 0) \cdot (1 + 1 - 0)}{(1 + 2)^2 (1 + 3)} = \frac{2}{36} = \frac{1}{18} < \frac{1}{12}$$
+The posterior variance will then be lower than the prior variance.
+
+We can also re-factorize the posterior variance in the following way:
+
+$$Var(\theta \lvert y) = \frac{(1 + y)(1 + n - y)}{(n + 2)^2 (n + 3)} = \bigg( \frac{1 + y}{n + 2} \bigg) \bigg( \frac{1 + n - y}{n + 2} \bigg) \bigg( \frac{1}{n+3} \bigg)$$
+
+$\bigg( \frac{1 + y}{n + 2} \bigg)$ and $\bigg( \frac{1 + n - y}{n + 2} \bigg)$ sum to 1, so their product can be at most $\frac{1}{4}$ (if each is exactly $\frac{1}{2}$). $\frac{1}{n + 3}$ is smaller than or equal to $\frac{1}{4}$, so the posterior variance will be at least $\frac{1}{16} < \frac{1}{12}$.
+
+### 2.5 (d)
+
+Give an example of $\text{Beta}(\alpha, \beta)$ prior and data $y$, $n$, in which posterior variance is higher than prior variance.
+
+```{r}
+
+beta_var <- function(a, b, n, y) {
+  ((a + y) * (b + n)) / ((a + b + n)^2 * (a + b + n + 1)) 
+}
+
+c(beta_var(1, 5, 0, 0), beta_var(1, 5, 1, 1))
+
+c(beta_var(5, 1, 0, 0), beta_var(5, 1, 1, 1))
+
+c(beta_var(10, 1, 0, 0), beta_var(10, 1, 10, 1))
+
+```
+
+Works for various cases with low values of $y$ and $n$.
+
+## 2.6 Mean and variance of negative binomial predictive distribution
+
+We have:
+
+$$y_j \sim \text{Poisson}(10n_j \theta_j); \qquad \theta_j \sim \text{Gamma}(\alpha, \beta)$$
+We're asked to find $E(y_j)$ and $Var(y_j)$. We can use the formulas for conditional mean and variance:
+
+$$E(Y) = E(E(Y \lvert \theta))$$
+$$Var(Y) = Var(E(Y \lvert \theta)) + E(Var(Y \lvert \theta))$$
+Thus:
+
+$$E(y_j) = E(E(y_j \lvert \theta_j)) = E(10n_j \theta_j) = 10n_j \frac{\alpha}{\beta}$$
+$$Var(y_j) = Var(E(y_j \lvert \theta_j)) + E(Var(y_j \lvert \theta_j))$$
+$$= Var(10n_j \theta_j) + E(10n_j \theta_j) = (10n_j)^2 \frac{\alpha}{\beta^2} + 10n_j \frac{\alpha}{\beta}$$
+
+## 2.7 Binomial: non-informative prior
+
+### 2.7 (a)
+
+For binomial likelihood, show that $\frac{1}{\theta (1 - \theta)}$ is the uniform prior distribution for the natural parameter of the exponential family. 
+
+$$p(y \lvert \theta) \propto \theta^y (1- \theta)^{n - y}$$
+$$= exp(y \cdot log(\theta) - (1 - y) \cdot log(1 - \theta))$$
+$$= exp \bigg(y \cdot log \bigg(\frac{\theta}{1 - \theta} \bigg) - (- y \cdot log(1 - \theta))  \bigg)$$
+Thus:
+
+$$\phi = \phi(\theta) = log \bigg( \frac{\theta}{1 - \theta} \bigg)$$
+$$\implies \theta = \theta(\phi) = \frac{e^{\phi}}{1 + e^{\phi}}$$
+$$\frac{\partial \theta}{\partial \phi} = \frac{e^{\phi}(1 + e^{\phi}) - e^{\phi} e^{\phi}}{(1 + e^{\phi})^2} = \frac{e^{\phi}}{(1 + e^{\phi})^2}$$
+
+Thus since $p(\theta) = \frac{1}{\theta (1 - \theta)}$:
+
+$$p(\phi) = p_{\theta}(\theta(\phi)) \cdot \bigg\lvert \frac{\partial \theta}{\partial \phi} \bigg\lvert = \frac{1}{\frac{e^{\phi}}{1 + e^{\phi}} \cdot (1 - \frac{e^{\phi}}{1 + e^{\phi}})} \cdot \frac{e^{\phi}}{(1 + e^{\phi})^2}$$
+$$= \frac{1}{\frac{e^{\phi}}{1 + e^{\phi}} \cdot \frac{1}{1 + e^{\phi}}} \cdot \frac{e^{\phi}}{(1 + e^{\phi})^2}$$
+$$= \frac{1}{\frac{e^{\phi}}{(1 + e^{\phi})^2}} \cdot \frac{e^{\phi}}{(1 + e^{\phi})^2} = 1$$
+
+### 2.7 (b)
+
+Show that if $n=0$ or $y=0$ the resulting posterior is improper:
+
+$$p(\theta \lvert y) = p(y \lvert \theta) p(\theta) \propto \theta^y (1 - \theta)^{n-y} \cdot \theta^{-1} (1 - \theta)^{-1}$$
+$$= \theta^{y - 1}(1 - \theta)^{n - y - 1}$$
+
+In order for the distribution to be proper, it needs to integrate to 1. For $y = 0$ 
+
+$$\int_0^1 \theta^{0-1} (1 - \theta)^{n-0-1} d\theta = \int_0^1 \theta^{-1} (1 - \theta)^{n-1} d \theta = \infty$$
+(since the integrand will become infinite as $\theta \to 0$)
+
+Likewise, for $n = 0$:
+
+$$\int_0^1 \theta^{y-1} (1 - \theta)^{0-y-1} d\theta = \int_0^1 \theta^{y-1} (1 - \theta)^{-y-1} d \theta = \infty$$
+(again, since the integrand will become infinite as $\theta \to 1$)
+
+## 2.8 Normal distribution with unknown mean
+
+Weights of random sample of $n$ students are recorded, resulting in mean weight $\bar y = 150$. Assume that the weight of the population are distributed around unknown mean $\theta$ with a standard deviation $20$. Assume a $\text{Normal}(180, 40^2)$ prior for $\theta$.
+
+### 2.8 (a)
+
+Give posterior distribution for $\theta$.
+
+Since both the prior and the likelihood are normal, we know that the posterior will be normal with the following mean and variance:
+
+$$E(\theta \lvert y) = \frac{\frac{n \bar y}{\sigma^2} + \frac{\mu_0}{\sigma_0^2}}{\frac{n}{\sigma^2} + \frac{1}{\sigma_0^2}} = \frac{\frac{150n}{20^2} + \frac{180}{40^2}}{\frac{n}{20^2} + \frac{1}{40^2}}$$
+$$Var(\theta \lvert y) = \frac{1}{\frac{n}{\sigma^2} + \frac{1}{\sigma_0^2}} = \frac{1}{\frac{n}{20^2} + \frac{1}{40^2}}$$
+Thus:
+
+$$\theta \lvert y \sim \text{Normal} \Bigg( \frac{\frac{150n}{20^2} + \frac{180}{40^2}}{\frac{n}{20^2} + \frac{1}{40^2}} ,  \frac{1}{\frac{n}{20^2} + \frac{1}{40^2}}\Bigg)$$
+
+### 2.8 (b)
+
+Give a posterior predictive distribution for a new student $\tilde y$.
+
+The posterior predictive distribution will again be a normal, since it is a product of normals:
+
+$$p(\tilde y) = p(\tilde y \lvert \theta) p( \theta \lvert y) p(\theta)$$
+$$E(\tilde y ) = E(E(\tilde y \lvert \theta, y)) = E(\theta \lvert y) = \mu$$
+$$Var( \tilde y) = Var(E(\tilde y \lvert \theta, y)) + E(Var( \tilde y \lvert \theta, y)) = Var(\theta \lvert y) + E(\sigma^2 \lvert y)$$
+$$= \sigma_n^2 + \sigma^2$$
+
+Therefore, the posterior predictive distribution will be:
+
+$$\tilde y \sim \text{Normal} \Bigg( \frac{\frac{150n}{20^2} + \frac{180}{40^2}}{\frac{n}{20^2} + \frac{1}{40^2}} ,  \frac{1}{\frac{n}{20^2} + \frac{1}{40^2}} + 20^2 \Bigg)$$
+
+### 2.8 (c)
+
+For $n=10$, give 95% credible interval for $\theta$ & 95% posterior predictive interval for $\tilde y$:
+
+```{r}
+
+n <- 10
+mu_theta <- (n / 20^2 * 150 + 1/40^2 * 180) / (n/20^2 + 1/40^2)
+sigma2_theta <- 1 / (n/20^2 + 1/40^2)
+sigma2_yt <- 1 / (n/20^2 + 1/40^2) + 20^2
+
+qnorm(c(0.025, 0.975), mu_theta, sqrt(sigma2_theta))
+qnorm(c(0.025, 0.975), mu_theta, sqrt(sigma2_yt))
+
+```
+
+### 2.8 (d)
+
+Do the same for $n = 100$
+
+```{r}
+
+n <- 100
+mu_theta <- (n / 20^2 * 150 + 1/40^2 * 180) / (n/20^2 + 1/40^2)
+sigma2_theta <- 1 / (n/20^2 + 1/40^2)
+sigma2_yt <- 1 / (n/20^2 + 1/40^2) + 20^2
+
+qnorm(c(0.025, 0.975), mu_theta, sqrt(sigma2_theta))
+qnorm(c(0.025, 0.975), mu_theta, sqrt(sigma2_yt))
+
+```
+
+The posterior for $\theta$ is a lot more precise, however the posterior predictive distribution does not change much (because the uncertainty about $\theta$ accounted for relatively little compared to the population variance).
+
+## 2.9 Setting parameters for Beta prior
+
+Let $\theta$ be the proportion of Californians who support the death penalty, and our prior for $\theta$ is Beta with a mean 0.6 and standard deviation 0.3.
+
+### 2.9 (a)
+
+Determine the $\alpha$ and $\beta$ parameters of the prior above.
+
+$$E(\theta) = \frac{\alpha}{\alpha + \beta} = 0.6$$
+$$Var(\theta) = \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)} = (0.3)^2 = 0.09$$
+Thus:
+
+$$\frac{\alpha}{\alpha + \beta} = 0.6 \implies 0.4 \alpha = 0.6 \beta \implies \alpha = \frac{3}{2} \beta$$
+&nbsp;
+
+$$\frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)} = (0.3)^2 = 0.09$$
+$$\implies \frac{\frac{3}{2} \beta^2}{(\frac{5}{2} \beta)^2 (\frac{5}{2} \beta + 1)} = 0.09$$
+$$\implies \frac{3}{2} = 0.09 \cdot \frac{25}{4} \cdot \bigg( \frac{5}{2} \beta + 1 \bigg)$$
+$$\implies 3 \cdot 50 = 9  \bigg( \frac{125}{8} \beta + \frac{25}{4} \bigg)$$
+$$\implies 150 \cdot 8 = 9 \cdot 125 \beta + 18 \cdot 25$$
+$$\implies 750 = 1125 \beta$$
+$$\implies \beta = \frac{2}{3}$$
+$$\implies \alpha = 1$$
+
+### 2.9 (b)
+
+A sample of 1,000 Californians is taken and 65% support the death penalty. What is the posterior mean and variance for $\theta$? Draw the posterior density.
+
+```{r}
+
+a <- 1 + 650
+b <- 1 + 1000 - 650
+
+theta <- seq(0, 1, 0.001)
+
+plot(theta, dbeta(theta, a, b), type = 'l',
+     xlim = c(0.55, 0.75), col = 'steelblue', lwd = 2,
+     xlab = expression(theta), ylab = 'Density', axes = FALSE)
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+## 2.10 Cable car problem
+
+Suppose there are $N$ cable cars in San Francisco, numbered 1 to $N$. You see a cable car at random numbered 203.
+
+### 2.10 (a)
+
+Assume geometric distribution on $N$ with a mean of 100:
+
+$$p(N) = \frac{1}{100} \cdot \bigg(\frac{99}{100} \bigg)^{N-1}$$
+
+What is the posterior distribution?
+
+$$p(N \lvert x = 203) \propto p(X=203 \lvert N) p(N)$$
+$$= \frac{1}{N} \cdot \frac{1}{100} \cdot \bigg(\frac{99}{100} \bigg)^{N-1} \qquad \text{(for } N\geq 203)$$
+$$\propto \frac{1}{N} \cdot \bigg(\frac{99}{100} \bigg)^{N-1} \qquad \text{(for } N\geq 203)$$
+
+### 2.10 (b)
+
+To be able to evaluate the posterior, we need to compute the normalizing constant $c$ where:
+
+$$\frac{1}{c} = \sum_{i=203}^\infty \frac{1}{N} \bigg( \frac{99}{100} \bigg)^{N-1}$$
+
+We can compute this constant & the posterior over a finite grid of values in R:
+
+```{r}
+
+N <- 203:1000
+
+ci <- sum(1/N * (99/100)^(N-1))
+c <- 1 / ci
+post <- c * 1/N * (99/100)^(N - 1)
+
+# Compute posterior mean
+(post_mean <- sum(N * post))
+
+# Compute posterior variance
+(post_variance <- sum((N - post_mean)^2 * post))
+
+plot(N, post, type = 'l',
+     col = 'steelblue', lwd = 2,
+     xlab = expression(theta), ylab = 'Density', axes = FALSE)
+abline(v = post_mean, col = 'grey60', lty = 'dashed')
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+### 2.10 (c)
+
+Choose a reasonable "non-informative" prior for $N$ & compute posterior mean and variance.
+
+Using $p(N) = \frac{1}{N}$:
+
+$$p(N \lvert x = 203) \propto \frac{1}{N} \cdot \frac{1}{N} = \frac{1}{N^2}$$
+$$E(N \lvert x = 203) = \sum_{N=203}^\infty \frac{1}{N^2}$$
+$$= \sum_{N=1}^\infty \frac{1}{N^2} - \sum_{N=1}^{202} \frac{1}{N^2}$$
+
+## 2.11 Computing with a non-conjugate single-parameter model
+
+We observe 5 observations from a Cauchy distribution with unknown center $\theta$: $(43, 44, 45, 46.5, 47.5)$. Assume a $\text{Uniform}(0, 100)$ prior on $\theta$.
+
+### 2.11 (a)
+
+Compute the unnormalized posterior density function on a grid of points. Using the grid approximation, compute and plot the normalized posterior:
+
+```{r}
+
+y <- c(43:45, 46.5, 47.5)
+theta <- seq(0, 100, 0.1)
+
+post <- sapply(theta, function(theta) 
+  exp(sum(-log((1 + (y - theta)^2)))))
+post <- post / sum(post)
+
+plot(theta, post, type = 'l',
+     col = 'steelblue', lwd = 2, xlim = c(40, 50),
+     xlab = expression(theta), ylab = 'Density', axes = FALSE)
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+### 2.11 (b)
+
+Sample 1,000 draws of $\theta$ from the posterior density and plot a histogram:
+
+```{r}
+
+theta_s <- sample(theta, 1000, prob = post,
+                  replace = TRUE)
+
+hist(theta_s, axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(theta[s]), ylab = 'Count')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+```
+
+### 2.11 (c)
+
+Use the 1,000 sample of $\theta$ to obtain 1,000 samples from the posterior predictive distribution of a future observation $y_6$ and plot:
+
+```{r}
+
+set.seed(123456)
+y6 <- rcauchy(1000, theta_s)
+
+hist(y6, axes = FALSE, main = NULL, breaks = 100,
+     col = 'steelblue', border = 'white',
+     xlab = expression(y[6]), ylab = 'Count')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+
+```
+
+## 2.12 Jeffrey's prior for Poisson distribution
+
+Let $y \lvert \theta \sim \text{Poisson}(\theta)$. Derive Jeffrey's prior for $\theta$ & then find $\alpha$ & $\beta$ parameters for the corresponding Gamma prior distribution:
+
+$$p(y \lvert \theta) = \frac{\theta^y e^{-\theta}}{y!}$$
+$$log(p(y \lvert \theta)) = y \cdot log(\theta) - \theta - log(y!) \propto y \cdot log(\theta) - \theta$$
+$$\frac{\partial}{\partial \theta} log(p(y \lvert \theta)) = \frac{y}{\theta} - 1$$
+$$\frac{\partial^2}{\partial \theta^2} log(p(y \lvert \theta)) = -\frac{y}{\theta^2}$$
+$$J(\theta) = E \bigg(- \frac{\partial^2}{\partial \theta^2} log(p(y \lvert \theta)) \bigg) = \frac{\theta}{\theta^2} = \frac{1}{\theta}$$
+
+$$\implies p(\theta) = \sqrt{J(\theta)} = \theta^{-\frac{1}{2}}$$
+
+Thus:
+
+$$\theta \sim \text{Gamma}(1/2, 0)$$
+
+## 2.13 Discrete data: Airplane accidents
+
+We are given number of accidents and deaths on scheduled flights over a 10-year period. 
+
+### 2.13 (a)
+
+Assume that fatal accidents are $\text{Poisson}(\theta)$ distributed. Set a prior distribution, determine the posterior distribution, & give a 95% predictive interval for the number of fatal accidents in 1986.
+
+```{r}
+
+year <- 1976:1985
+accidents <- c(24, 25, 31, 31, 22, 21, 26, 20, 16, 22)
+deaths <- c(734, 516, 754, 877, 814, 362, 764, 809, 223, 1066)
+death_rate <- c(0.19, 0.12, 0.15, 0.16, 0.14, 0.06, 0.13, 0.13, 0.03, 0.15)
+
+theta_s <- rgamma(1e3, sum(accidents), length(accidents))
+y1986 <- rpois(1e3, theta_s)
+
+hist(y1986, axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = 'Predicted number of accidents in 1986', ylab = 'Count')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+quantile(y1986, c(0.025, 0.975))
+
+```
+
+### 2.13 (b)
+
+Assume that fatal accidents are Poisson distributed with a constant rate and exposure in each year proportional to the number of miles flown. Set a prior distribution, determine the posterior distribution, & give a 95% predictive interval for the number of fatal accidents in 1986.
+
+```{r}
+
+miles <- deaths / death_rate 
+theta_s <- rgamma(1e3, sum(accidents), 
+                  length(accidents) * mean(miles) / 1e3)
+y1986_2 <- rpois(1e3, theta_s * 8)
+
+hist(y1986_2, axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = 'Predicted number of accidents in 1986', ylab = 'Count')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+quantile(y1986_2, c(0.025, 0.975))
+
+```
+
+## 2.14 Algebra of the Normal model
+
+### 2.14 (a)
+
+Derive the posterior distribution of a conjugate Normal model:
+
+$$p(y \lvert \theta) \propto exp \bigg(-\frac{1}{2} \bigg( \frac{(y - \mu)^2}{\sigma^2} + \frac{(\mu - \mu_0)^2}{\sigma_0^2} \bigg) \bigg)$$
+$$= exp \bigg(-\frac{1}{2} \bigg( \frac{y^2}{\sigma^2} - \frac{2y \mu}{\sigma^2} + \frac{\mu^2}{\sigma^2} + \frac{\mu^2}{\sigma_0^2} - \frac{2 \mu \mu_0}{\sigma_0^2} + \frac{\mu_0^2}{\sigma_0^2} \bigg) \bigg)$$
+$$= exp \bigg(-\frac{1}{2} \bigg(\frac{\mu^2}{\sigma^2} + \frac{\mu^2}{\sigma_0^2} - \frac{2y \mu}{\sigma^2} - \frac{2 \mu \mu_0}{\sigma_0^2} + c \bigg) \bigg)$$
+$$\propto exp \bigg(-\frac{1}{2} \bigg(\mu^2 \bigg( \frac{1}{\sigma^2} + \frac{1}{\sigma_0^2} \bigg) -  2\mu \bigg( \frac{y }{\sigma^2} - \frac{ \mu_0}{\sigma_0^2} \bigg)\bigg) \bigg)$$
+$$\propto exp \Bigg(-\frac{1}{2} \cdot \bigg( \frac{1}{\sigma^2} + \frac{1}{\sigma_0^2} \bigg) \cdot \bigg(\mu  -  \frac{\frac{y}{\sigma^2} - \frac{ \mu_0}{\sigma_0^2}}{\frac{1}{\sigma^2} + \frac{1}{\sigma_0^2}} \bigg)^2 \Bigg) \qquad \text{(by completing the square)}$$
+
+Thus:
+
+$$\mu \lvert y \sim \text{Normal} \Bigg( \frac{\frac{y}{\sigma^2} - \frac{ \mu_0}{\sigma_0^2}}{\frac{1}{\sigma^2} + \frac{1}{\sigma_0^2}}, \frac{1}{\frac{1}{\sigma^2} + \frac{1}{\sigma_0^2}}  \Bigg)$$
+
+### 2.14 (b)
+
+Derive the conjugate Normal model for 2+ observations by adding 1 observation at a time:
+
+We start with a $\mu \lvert y_1 \sim \text{Normal} \Bigg( \frac{\frac{y_1}{\sigma^2} - \frac{ \mu_0}{\sigma_0^2}}{\frac{1}{\sigma^2} + \frac{1}{\sigma_0^2}}, \frac{1}{\frac{1}{\sigma^2} + \frac{1}{\sigma_0^2}}  \Bigg)$ model (after observing 1 observation). Then:
+
+$$\frac{1}{\sigma_2^2} = \frac{1}{\sigma^2} + \frac{1}{\sigma_1^2} = \frac{1}{\sigma^2} + \bigg( \frac{1}{\sigma^2} + \frac{1}{\sigma_0^2} \bigg) = \frac{2}{\sigma^2} + \frac{1}{\sigma_0^2}$$
+$$\implies \sigma_2^2 = \frac{1}{\frac{2}{\sigma^2} + \frac{1}{\sigma_0^2}}$$
+
+$$\mu_2 = \frac{\frac{y_2}{\sigma^2} + \frac{\mu_1}{\sigma_1^2}}{\frac{1}{\sigma_2^2}}$$
+$$= \frac{\frac{y_2}{\sigma^2} + \bigg( \frac{\frac{y_1}{\sigma^2} + \frac{\mu_0}{\sigma_0^2}}{\frac{1}{\sigma^2} + \frac{1}{\sigma_0^2}} \bigg) \cdot \bigg( \frac{1}{\sigma^2} + \frac{1}{\sigma_0^2} \bigg)}{\frac{1}{\sigma_2^2}}$$
+$$= \frac{\frac{y_2}{\sigma^2} + \frac{y_1}{\sigma^2} + \frac{\mu_0}{\sigma_0^2} }{\frac{1}{\sigma_2^2}}$$
+$$= \frac{\frac{2 \bar y}{\sigma^2} + \frac{\mu_0}{\sigma^2}}{\frac{2}{\sigma^2} + \frac{1}{\sigma_0^2}}$$
+
+where $\bar y = \frac{y_1 + y_2}{2}$. It is easy to see that this updating formula will work for $n = 2, 3, \ldots$.
+
 # Chapter 4
 
 ## 4.1 Normal approximation: Cauchy
 
-We observe 5 independent observations from Cauchy distribution with an unknown parameter $\theta$: $(y_1, \ldots, y_5) = (-2, -1, 0, 1.5, 2.5)$.
+We observe 5 independent observations from Cauchy distribution with an
+unknown parameter $\theta$:
+$(y_1, \ldots, y_5) = (-2, -1, 0, 1.5, 2.5)$.
 
-### (a)
+### 4.1 (a)
 
 Determine the first and second derivative of log-posterior density:
 
 $$p(\mathbf{y} \lvert \theta) = \prod_{i=1}^5 \frac{1}{1 + (y_i - \theta)^2}$$
 
-$$log(p(\mathbf{y} \lvert \theta)) = \sum_{i=1}^5 log \bigg( \frac{1}{1 + (y_i - \theta)^2} \bigg) = -\sum_{i=1}^5 log(1 + (y_i - \theta)^2)$$  
-  
-&nbsp;  
+$$log(p(\mathbf{y} \lvert \theta)) = \sum_{i=1}^5 log \bigg( \frac{1}{1 + (y_i - \theta)^2} \bigg) = -\sum_{i=1}^5 log(1 + (y_i - \theta)^2)$$
+
+ 
 
 $$\frac{\partial}{\partial \theta} log(p(\mathbf{y} \lvert \theta)) = -\sum_{i=1}^5 \frac{\partial}{\partial \theta} log(1 + (y_i - \theta)^2)$$
 $$= - \sum_{i=1}^5 \frac{1}{1 + (y_i - \theta)^2} \cdot 2(y_i - \theta) \cdot(-1)$$
 $$= 2 \sum_{i=1}^5 \frac{y_i - \theta}{1 + (y_i - \theta)^2}$$
 
-&nbsp;
+ 
 
 $$\frac{\partial^2}{\partial \theta^2} log(p(\mathbf{y} \lvert \theta)) = 2 \sum_{i=1}^5 \frac{\partial}{\partial \theta} \frac{y_i - \theta}{1 + (y_i - \theta)^2}$$
 $$= 2 \sum_{i=1}^5 \frac{(-1)[1 + (y_i - \theta)^2] - 2 \cdot (y_i - \theta) \cdot (-1) \cdot (y_i - \theta)}{[1 + (y_i - \theta)^2]^2}$$
 $$= 2 \sum_{i=1}^5 \frac{(y_i - \theta)^2 - 1}{[1 + (y_i - \theta)^2]^2}$$
 
-### (b)
+### 4.1 (b)
 
 To find the posterior mode, we can use numerical optimization:
 
@@ -66,7 +688,7 @@ mode <- uniroot(scorefun, c(0, 1))$f.root
 
 ```
 
-### (c)
+### 4.1 (c)
 
 Calculate the normal approximation:
 
@@ -83,9 +705,9 @@ post_approx <- dnorm(theta, mode, sqrt(var_theta))
 post_approx <- post_approx / sum(post_approx)
 
 plot(theta, post_approx, type = 'l', 
-     axes = FALSE, col = 'firebrick',
+     axes = FALSE, lwd = 2, col = 'firebrick',
      xlab = expression(theta), ylab = 'Density')
-lines(theta, post_true, col = 'steelblue', type = 'l')
+lines(theta, post_true, lwd = 2, col = 'steelblue', type = 'l')
 axis(1, tick = FALSE)
 box(bty = 'L', col = 'grey60')
 
@@ -95,8 +717,7 @@ box(bty = 'L', col = 'grey60')
 
 We have four observations from four independent experiments:
 
-$$\mathbf{y} = (0, 1, 3, 5)$$
-$$\mathbf{n} = (5, 5, 5, 5)$$
+$$\mathbf{y} = (0, 1, 3, 5)$$ $$\mathbf{n} = (5, 5, 5, 5)$$
 $$\mathbf{x} = (-0.86, -0.3, -0.05, 0.73)$$
 
 $$y_i \lvert \theta_i \sim \text{Binomial}(n_i, \theta_i)$$
@@ -110,12 +731,12 @@ $$= \prod_{i=1}^4 {5 \choose y_i} \bigg( \frac{e^{\alpha + \beta x_i}}{1 + e^{\a
 $$log(p(\mathbf{y} \lvert \alpha, \beta)) \propto \sum_{i=1}^4 y_i \cdot (\alpha + \beta x_i) - y_i \cdot log(1 + e^{\alpha + \beta x_i}) - 5 \cdot log(1 + e^{\alpha + \beta x_i}) + y_i \cdot log(1 + e^{\alpha + \beta x_i})$$
 $$= \sum_{i=1}^4 y_i \cdot (\alpha + \beta x_i) - 5 \cdot log(1 + e^{\alpha + \beta x_i})$$
 
-&nbsp;
+ 
 
 $$\frac{\partial}{\partial \alpha} log(p(y_i \lvert \alpha, \beta)) = y_i - 5 \cdot \frac{e^{\alpha + \beta x_i}}{1 + e^{\alpha + \beta x_i}}$$
 $$\frac{\partial}{\partial \beta} log(p(y_i \lvert \alpha, \beta)) =y_i x_i - 5 \cdot \frac{x_i \cdot e^{\alpha + \beta x_i}}{1 + e^{\alpha + \beta x_i}}$$
 
-&nbsp;
+ 
 
 $$\frac{\partial^2}{\partial \alpha^2} log(p(y_i \lvert \alpha, \beta)) = - 5 \cdot \frac{e^{\alpha + \beta x_i}(1 + e^{\alpha + \beta x_i}) - e^{\alpha + \beta x_i} \cdot e^{\alpha + \beta x_i}}{(1 + e^{\alpha + \beta x_i})^2}$$
 $$= - \frac{5e^{\alpha + \beta x_i}}{(1 + e^{\alpha + \beta x_i})^2}$$
@@ -203,6 +824,43 @@ var_theta
 
 ```
 
-Now the function we want to approximate is LD50:
+Let $\mathbf{\theta}$ be the parameter vector $(\alpha, \beta)$. Now the function we want to approximate is LD50:
 
-$$\text{LD50} = g(\alpha, \beta) = - \frac{\alpha}{\beta}$$
+$$\text{LD50} = g(\mathbf{\theta}) = - \frac{\alpha}{\beta}$$
+By the invariance of MLE's, we know that:
+
+$$\text{MLE}(g(\mathbf{\theta})) = g( \mathbf{\hat \theta}) = -\frac{\hat \alpha}{\hat \beta}$$
+Now, as for the Delta method, we can expand $g(\mathbf{\theta})$ as a Taylor series around the posterior mode:
+
+$$g(\mathbf{\hat \theta}) \approx g(\mathbf{\theta}) + \nabla g(\mathbf{\theta})^T( \mathbf{\hat \theta} - \mathbf{\theta})$$
+where $g(\theta)$ is the transformation of the true parameter, and $\nabla g(\theta)$ is the Jacobian of the transformation. We can use this to obtain the variance of the transformed parameters:
+
+$$Var(g(\mathbf{\theta})) \approx Var(g(\mathbf{\theta}) + \nabla g(\mathbf{\theta})^T( \mathbf{\hat \theta} - \mathbf{\theta}))$$
+$$= Var(g(\mathbf{\theta}) + \nabla g(\mathbf{\theta})^T \mathbf{\hat \theta} - \nabla g(\mathbf{\theta})^T \mathbf{\theta})$$
+$$= Var(\nabla g(\mathbf{\theta})^T \mathbf{\hat \theta}) \qquad \text{(since } g(\mathbf{\theta}) \text{is a constant)}$$
+$$= \nabla g(\mathbf{\theta})^T \Sigma g(\mathbf{\theta}) \nabla g(\mathbf{\theta})$$
+Additionally:
+
+$$\nabla g(\mathbf{\theta}) = \begin{bmatrix} \frac{\partial}{\partial \alpha} g(\mathbf{\theta}) \\ \frac{\partial}{\partial \beta} g(\mathbf{\theta}) \end{bmatrix} = \begin{bmatrix} -\frac{1}{\beta} \\ \frac{\alpha}{\beta^2} \end{bmatrix} $$
+
+We approximate this with the MLE values:
+
+$$\nabla g(\mathbf{\hat \theta}) = \begin{bmatrix} -\frac{1}{\beta} \\ \frac{\alpha}{\beta^2} \end{bmatrix} \approx \begin{bmatrix} -\frac{1}{7.75} \\ \frac{0.85}{(7.75)^2} \end{bmatrix}$$
+Therefore:
+
+$$Var(\mathbf{\hat \theta}) \approx \begin{bmatrix} -\frac{1}{7.75} & \frac{0.85}{(7.75)^2} \end{bmatrix} \begin{bmatrix} 1.04 & 3.55 \\ 3.55 & 2.75 \end{bmatrix} \begin{bmatrix} -\frac{1}{7.75} \\ \frac{0.85}{(7.75)^2} \end{bmatrix}$$
+
+Compute this numerically in R:
+
+```{r}
+
+jacob <- c(-1/mode[2], mode[1] / mode[2]^2)
+
+mode_ld50 <- - mode[1] / mode[2] 
+var_ld50 <- as.numeric(t(jacob) %*% var_theta %*% jacob)
+
+(waldci_ld50 <- mode_ld50 + c(-1, 0, 1) * 1.96 * sqrt( var_ld50))
+
+```
+
+The Wald confidence interval seems to roughly correspond to the histogram on page 87.
