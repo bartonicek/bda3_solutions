@@ -643,6 +643,370 @@ $$= \frac{\frac{2 \bar y}{\sigma^2} + \frac{\mu_0}{\sigma^2}}{\frac{2}{\sigma^2}
 
 where $\bar y = \frac{y_1 + y_2}{2}$. It is easy to see that this updating formula will work for $n = 2, 3, \ldots$.
 
+## 2.15 Mean and variance of Beta distribution
+
+We have the following result (Beta function):
+
+$$\int_0^1 u^{\alpha - 1} (1 - u)^{\beta - 1} du = \frac{\Gamma(\alpha) \Gamma (\beta)}{\Gamma(\alpha + \beta)}$$
+
+If $Z$ has a Beta distribution, find $E[Z^m (1 - z)^n]$, hence find mean and variance of Beta distribution:
+
+$$E[Z^m (1 - z)^n] = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \int_0^1 z^{\alpha + m -1} (1 - z)^{\beta + n - 1} dz$$
+$$= \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \frac{\Gamma(\alpha + m) \Gamma(\beta + n)}{\Gamma(\alpha + \beta + m + n)}$$
+
+If we want the expectation of $Z$, $E(Z)$, then clearly $m=1$ and $n = 0$:
+
+$$E(Z) = E[Z^1(1 - Z)^0] = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \frac{\Gamma(\alpha + 1) \Gamma(\beta + 0)}{\Gamma(\alpha + \beta + 1 + 0)}$$
+$$= \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \frac{\alpha \cdot\Gamma(\alpha) \Gamma(\beta + 0)}{(\alpha + \beta) \cdot \Gamma(\alpha + \beta)}$$
+$$= \frac{\alpha}{\alpha + \beta}$$
+We can do the same for variance of $Z$:
+
+$$Var(Z) = E(Z^2) - E(Z)^2 = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \frac{\Gamma(\alpha + 2) \Gamma(\beta + 0)}{\Gamma(\alpha + \beta + 2 + 0)} - \bigg( \frac{\alpha}{\alpha + \beta} \bigg)^2$$
+$$= \frac{(\alpha + 1)\alpha}{(\alpha + \beta + 1) (\alpha + \beta)} - \frac{\alpha^2}{(\alpha + \beta)^2}$$
+$$= \frac{(\alpha^2 + \alpha)(\alpha + \beta) - \alpha^2 (\alpha + \beta + 1)}{(\alpha + \beta)^2 (\alpha + \beta + 1)}$$
+$$= \frac{\alpha^3 + \alpha^2 \beta + \alpha^2 + \alpha \beta - \alpha^3 - \alpha^2 \beta - \alpha^2}{(\alpha + \beta)^2 (\alpha + \beta + 1)}$$
+$$= \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}$$
+
+## 2.16 Beta-binomial distribution
+
+Let $Y$ have a $\text{Binomial}(n, \theta)$ distribution and $\theta$ have a $\text{Beta}(\alpha, \beta)$ prior. 
+
+### 2.16 (a)
+
+Find $p(y)$ i.e. the marginal distribution of $y$:
+
+$$p(y) = \int_{\theta} p(y \lvert \theta) p(\theta) d \theta$$
+$$= \int_0^1 {n \choose y} \theta^y  (1 - \theta)^{n - y} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \theta^{\alpha - 1} (1 - \theta)^\beta - 1{} d \theta$$
+$$= {n \choose y} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \int_0^1 \theta^{\alpha + y - 1} (1 - \theta)^{\beta + n-y -1} d \theta$$
+$$= {n \choose y} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \frac{\Gamma(\alpha + y) \Gamma(\beta + n - y)}{\Gamma(\alpha + \beta + n)}$$
+
+(i.e. the Beta-Binomial distribution)
+
+### 2.16 (b)
+
+Show that, if the beta-binomial probability is constant in $y$, then $\alpha = \beta = 1$:
+
+$${n \choose y} \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \frac{\Gamma(\alpha + y) \Gamma(\beta + n - y)}{\Gamma(\alpha + \beta + n)} \propto \frac{\Gamma(\alpha + y) \Gamma(\beta + n - y)}{y!(n-y)!} \qquad \text{(all terms not involving } y \text{ are constant)}$$
+$$= \frac{(\alpha + y - 1)! (\beta + n - y)!}{y! (n - y)!}$$
+
+Clearly, the factorial terms will cancel out if $\alpha = \beta = 1$, thus the probability will be constant in $y$. 
+
+## 2.17 Invariance to transformation
+
+Let $\frac{nv}{\sigma^2}$ be distributed as $\chi^2_n$, and let $\sigma$ have an improper prior distribution with density given by $p(\sigma) \propto \frac{1}{\sigma}$
+
+### 2.17 (a)
+
+Prove that the corresponding prior density for $\sigma^2$ is $p(\sigma^2) \propto \frac{1}{\sigma^2}$.
+
+Let $x = \sigma$ and $y = \sigma^2$.
+
+$$y = y(x) = x^2$$
+$$x = x(y) = \sqrt{y}$$
+$$\frac{\partial x}{\partial y} = \frac{1}{2 \sqrt{y}}$$
+
+$$\implies p_Y(y) = p_X(x(y)) \cdot \bigg\lvert \frac{\partial x}{\partial y} \bigg\lvert = \frac{1}{\sqrt{y}} \cdot \frac{1}{2 \sqrt{y}}$$
+$$= \frac{1}{\sqrt{\sigma^2}} \cdot \frac{1}{2 \sqrt{\sigma^2}} \propto \frac{1}{\sigma^2} \qquad \text{(substituting } y = \sigma^2 \text{ back in)}$$
+
+### 2.17 (b)
+
+Show that hte 95% highest posterior density region for $\sigma^2$ is not the same as the obtained by squaring the endpoints of the posterior interval for $\sigma$.
+
+$$p(\sigma \lvert \text{data}) \propto p(\text{data} \lvert \sigma)p(\sigma) = \frac{1}{2^{\frac{n}{2}} \Gamma(\frac{n}{2})} \bigg( \frac{nv}{\sigma^2} \bigg)^{\frac{n}{2} - 1} exp \bigg(-\frac{nv}{2\sigma^2} \bigg) \cdot \frac{1}{\sigma} \propto (\sigma^2)^{-\frac{n}{2} - \frac{1}{2}} exp \bigg(-\frac{c}{\sigma^2} \bigg)$$
+$$p(\sigma^2 \lvert \text{data}) \propto p(\text{data} \lvert \sigma)p(\sigma^2) = \frac{1}{2^{\frac{n}{2}} \Gamma(\frac{n}{2})} \bigg( \frac{nv}{\sigma^2} \bigg)^{\frac{n}{2} - 1} exp \bigg(-\frac{nv}{2\sigma^2} \bigg) \cdot \frac{1}{\sigma^2} \propto (\sigma^2)^{-\frac{n}{2} - 1} exp \bigg(-\frac{c}{\sigma^2} \bigg)$$
+$$(\text{where} c = \frac{nv}{2})$$
+
+Let $(\sqrt{a}, \sqrt{b})$ and $(a, b)$ be the 95% highest posterior density intervals for $\sigma$ and $\sigma^2$ respectively. Then:
+
+$$a^{-\frac{n}{2} - \frac{1}{2}} exp\bigg(-\frac{c}{a} \bigg) = b^{-\frac{n}{2} - \frac{1}{2}} exp\bigg(-\frac{c}{b} \bigg)$$
+$$a^{-\frac{n}{2} - 1} exp\bigg(-\frac{c}{a} \bigg) = b^{-\frac{n}{2} - 1} exp\bigg(-\frac{c}{b} \bigg)$$
+
+Or equivalently: 
+
+$$\bigg(-\frac{n}{2} - \frac{1}{2} \bigg) log(a) - \frac{c}{a} = \bigg(-\frac{n}{2} - \frac{1}{2} \bigg) log(b) - \frac{c}{b}$$
+$$\bigg(-\frac{n}{2} - 1 \bigg) log(a) - \frac{c}{a} = \bigg(-\frac{n}{2} - 1 \bigg) log(b) - \frac{c}{b}$$
+$$\implies \frac{1}{2} log(a) = \frac{1}{2} log(b)$$
+Which will be true only if $a = b$ but then the 95% credible interval will be just a point containing zero probability mass, and therefore won't be a valid interval & we have a contradiction.
+
+## 2.18 Posterior of Poisson model parametrized with rate and exposure
+
+Let $y$ be distributed as $\text{Poisson}(x_i \lambda)$ where $\lambda$ is the rate parameter and $x_i$ is an exposure variable, and $\lambda$ have a $\text{Gamma}(\alpha, \beta)$ prior distribution. Then:
+
+$$p(\lambda \lvert y) \propto p(y \lvert \lambda)p(\lambda) = \prod_{i=1}^n \frac{(x_i \lambda)^{y_i} e^{-x_i \lambda}}{y_i!} \cdot \frac{\beta^{\alpha}}{\Gamma(\alpha)} \lambda^{\alpha - 1} e^{- \beta \lambda}$$
+$$\propto \lambda^{ \alpha + \sum_{i = 1}^n  y_i - 1} e^{- (\beta + \sum_{i=1}^n x_i) \lambda}$$
+$$\implies \lambda \lvert y \sim \text{Gamma} \bigg(\alpha + \sum_{i=1}^n y_i, \beta + \sum_{i=1}^n x_i \bigg)$$
+
+## 2.19 Conjugate exponential model
+
+### 2.19 (a)
+
+Show that if $y$ is $\text{Exponential}(\theta)$ distributed, then the conjugate prior for $\theta$ is Gamma:
+
+$$p(y \lvert \theta) = \prod_{i= 1}^n \theta e^{-\theta y_i} = \theta^n e^{-\theta\sum_{i = 1}^n y_i}$$
+$$p(\theta) = \frac{\beta^\alpha}{\Gamma(\alpha)} \theta^{\alpha - 1} \beta^{\beta - 1}$$
+
+$$\implies p(\theta \lvert y) \propto \theta^{\alpha + n - 1}e^{-(\beta + \sum_{i=1}^n y_i) \theta}$$
+$$\implies \theta \lvert y \sim \text{Gamma}(\alpha + n, \beta + \sum_{i=1}^n y_i)$$
+
+### 2.19 (b)
+
+Show that equivalnt prior specification for mean, $\phi = \frac{1}{\theta}$ is Inverse-Gamma.
+
+$$\phi = \phi(\theta) = \frac{1}{\theta}$$
+$$\theta = \theta(\phi) = \frac{1}{\phi}$$
+$$\frac{\partial \theta}{\partial \phi} = - \frac{1}{\phi^2}$$
+
+$$p_\phi (\phi) = p_\theta(\theta (\phi)) \cdot \bigg\lvert \frac{\partial \theta}{\partial \phi} \bigg\lvert \propto \bigg( \frac{1}{\phi} \bigg)^{\alpha - 1} e^{-\frac{\beta}{\phi}} \cdot \frac{1}{\phi^2} = \phi^{-\alpha - 1} e^{-\frac{\beta}{\phi}}$$
+$$\implies \phi \sim \text{Inverse-Gamma}(\alpha, \beta)$$
+### 2.19 (c)
+
+The length of a life of a lightbulb is distributed $\text{Exponential}(\theta)$. Suppose $\theta$ has a prior Gamma distribution with coefficient of variation (standard deviation divided by mean) of 0.5. If the coefficient of variation is to be reduced to 0.1, how many lightbulbs are to be tested?
+
+$$\frac{\sqrt{\frac{\alpha}{\beta^2}}}{\frac{\alpha}{\beta}} = 0.5$$
+$$\implies \frac{1}{\sqrt{\alpha}} = 0.5$$
+$$\implies \frac{1}{\alpha} = 0.25 \implies \alpha = 4$$
+
+The posterior distribution for $\theta$ will be $\text{Gamma}(\alpha + n , \beta + \sum_{i=1}^n y_i)$, therefore:
+
+$$\frac{1}{\sqrt{\alpha + n}} = 0.1$$
+$$\implies \frac{1}{\sqrt{4 + n}} = 0.1$$
+$$\implies \frac{1}{n + 4} = 0.01$$
+$$\implies 100 = n + 4 \implies n = 96$$
+
+Thus we need to test at least 96 lightbulbs.
+
+## 2.20 Censored and uncensored exponential model
+
+Suppose $y$ is $\text{Exponential}(\theta)$ distributed and the prior distribution for $\theta$ is $\text{Gamma}(\alpha, \beta)$. We observe $y \geq 100$ but don't know the exact value of $y$. What is the posterior distribution for $\theta \lvert y \geq 100$ as a function of $\alpha$ and $\beta$? What's the posterior mean and variance?
+
+$$p(y \geq 100 \lvert \theta) = 1 - (1 - e^{-100 \theta}) = e^{-100 \theta}$$
+$$p(\theta) \propto \theta^{\alpha - 1} e^{-\beta \theta}$$
+$$\implies p(\theta \lvert y \geq 100) = \theta^{\alpha - 1} e^{- (\beta + 100) \theta}$$
+$$\implies \theta \lvert y \sim \text{Gamma}(\alpha, \beta + 100)$$
+
+Thus:
+
+$$E(\theta \lvert y) = \frac{\alpha}{\beta + 100}$$
+$$Var(\theta \lvert y) = \frac{\alpha}{(\beta + 100)^2}$$
+
+### 2.20 (b)
+
+What is the posterior distribution, the posterior mean and variance if we're told $y=100$?
+
+From question **2.19 (a)**, we know that $\theta$ will have a $\text{Gamma}(\alpha + 1, \beta + 100)$ distribution. Therefore:
+
+$$E(\theta \lvert y) = \frac{\alpha + 1}{\beta + 100}$$
+$$Var(\theta \lvert y) = \frac{\alpha + 1}{(\beta + 100)^2}$$
+
+### 2.20 (c)
+
+Explain why posterior variance for $\theta \lvert y = 100$ is greater than that of $\theta \lvert y \geq 100$.
+
+*On average*, the variance of $\theta$ decreases with more information:
+
+$$E(Var(\theta \lvert y) \lvert y \geq 100) \leq Var(\theta \lvert y \geq 100)$$
+$y = 100$ is just one possible value & so the variance of its corresponding posterior is not necessarily lower than that of $\theta \lvert y \geq 100$; only averaging across across all possible values $y \geq 100$ is guaranteed to result in lower variance.
+
+## 2.21 Simple hierarchical modeling
+
+The file `pew_research_center_june_elect_wknd_data.dta` has data from Pew Research Centre polls taken during 2008 elections.
+
+### 2.21 (a)
+
+Graph the proportion of liberals in each state vs. Obama vote share
+
+```{r}
+
+dt1 <- haven::read_dta('pew_research_center_june_elect_wknd_data.dta')
+dt1$state <- haven::as_factor(dt1$state)
+dt1 <- subset(dt1, state != 'hawaii') # Drop Hawaii
+
+dt2 <- read.csv('2008ElectionResult.csv')
+dt2 <- subset(dt2, !(state %in% c('Alaska', 'Hawaii'))) # Drop Alaska & Hawaii
+dt2$state <- tolower(dt2$state)
+dt2[dt2$state == 'district of columbia', 1] <- 'washington dc'
+
+# Calculate percentage of "Very liberal" voters
+pct_lib <- tapply(dt1$ideo, dt1$state, function(x) mean(x == 5, na.rm = TRUE))
+pct_lib <- pct_lib[!is.na(pct_lib)]
+dt3 <- data.frame(state = sort(unique(dt1$state)), pct_lib)
+dt3 <- merge(dt3, dt2, all.x = TRUE)
+dt3 <- dt3[order(levels(dt3$state)), ]
+
+plot(dt3$pct_lib, dt3$vote_Obama_pct / 100,
+     axes = FALSE, type = 'n',
+     xlab = 'Proportion of "very liberal" voters',
+     ylab = "Obama's vote share", xlim = c(0, 0.12))
+text(dt3$pct_lib, dt3$vote_Obama_pct / 100, 
+     label = dt3$state)
+axis(1, tick = FALSE)
+axis(2, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+## 2.22 Prior distributions
+
+A hypothetical study is performed where a random sample of 100 college students is first invited to throw 100 free throws to establish their baseline ability. The students then take 50 practice shots each day for one month and then are invited back to take 100 shots for final measurements. Give three prior distributions for $\theta$, improvement in success probability:
+
+### 2.22 (a)
+
+A non-informative prior.
+
+Since $\theta$ is constrained to lie between -1 and 1 (if a student either makes all 100 free throws on the first go and hits none on the second go or vice versa, respectivelly), then the natural choice for a non-informative prior is a $\text{Uniform}(-1, 1)$.
+
+### 2.22 (b)
+
+A subjective prior based on your best knowledge.
+
+We can assume that most students will probably improve with a month of practice, although it's questionable how much. From my (poor) knowledge of basketball, I'd assume the students to make on average about 10/100 free throws on the first go and about 30/100 throws on the second go. Assuming that, a quick and dirty reasonable prior might be $\text{Normal(0.2, 0.2)}$ i.e. one centered on the expected difference but with a fairly wide margin for a better or worse overall trend, with a very low prior probability of $\theta$ exceeding 1 or -1 (with more effort, we could construct a prior that's actually bounded between those values, such as scaled Beta, but that should not be necessary with 100 participants).
+
+### 2.22 (c)
+
+A weakly informative prior
+
+A good, quick and dirty weakly informative prior might be $\text{Normal}(0, 0.5)$, with a fairly diffuse probability mass across the range of reasonable $\theta$'s. Again, this prior suffers from allowing values of $\theta$ smaller than -1 and greater than 1, however, that again should not be a problem with the amount of data.
+
+# Chapter 3
+
+## 3.1 Multinomial as binomial
+
+Suppose data $(y_1, y_2, \ldots , y_k)$ comes from a $\text{Multinomial}(\theta_1, \theta_2, \ldots, \theta_k)$ distribution, and we have a $\text{Dirichlet}(\alpha_1, \alpha_2, \ldots, \alpha_k)$ prior on the $\theta$'s. Let $\alpha = \frac{\theta_1}{\theta_1 + \theta_2}$.
+
+### 3.1 (a)
+
+Write the marginal posterior distribution of $\alpha$:
+
+$$p(\theta_1, \theta_2 \lvert \mathbf{y}) \propto \theta_1^{\alpha_1 + y_1 -1} \theta_2^{\alpha_2 + y_2 - 1} (1 - \theta_1 - \theta_2)^{\sum_{i \not\in \{1, 2 \}} \alpha_i + y_i - 1}$$
+
+$$\alpha = \alpha(\theta_1, \theta_2) = \frac{\theta_1}{\theta_1 + \theta_2}; \qquad \beta = \beta(\theta_1, \theta_2) = \theta_1 + \theta_2$$
+$$\theta_1 = \theta_1(\alpha, \beta) = \alpha \beta; \qquad \theta_2 = \theta_2(\alpha, \beta) = \beta - \alpha \beta = \beta (1 - \alpha)$$
+$$\lvert D \lvert = \Bigg\lvert \det \Bigg( \begin{bmatrix} \beta & \alpha \\ -\beta & 1 - \alpha \end{bmatrix} \Bigg) \Bigg\lvert = \lvert \beta (1 - \alpha) - \alpha (- \beta) \lvert = \beta$$
+$$\implies p(\alpha, \beta \lvert y) = p_{\theta_1, \theta_2} (\theta_1 (\alpha, \beta), \theta_2(\alpha, \beta)) \cdot \lvert D \lvert$$
+$$\propto (\alpha \beta)^{\alpha_1 + y_1 - 1} [\beta (1 - \alpha)]^{\alpha_2 + y_2 - 1} [1 - \alpha \beta - \beta(1 - \alpha)]^{\sum_{i \not\in \{1, 2 \}} \alpha_i + y_i - 1} \cdot \beta$$
+$$= \alpha^{\alpha_1 + y_1 - 1} (1 - \alpha)^{\alpha_2 + y_2 - 1} \beta^{\alpha_1 + \alpha_2 + y_1 + y_2 - 1} (1 - \beta)^{\sum_{i \not\in \{1, 2 \}} \alpha_i + y_i - 1}$$
+
+Thus:
+
+$$p(\alpha \lvert y) \propto \int_{\beta} p(\alpha, \beta \lvert y) d\beta$$
+$$= \alpha^{\alpha_1 + y_1 - 1} (1 - \alpha)^{\alpha_2 + y_2 - 1} \int_0^1 \beta^{\alpha_1 + \alpha_2 + y_1 + y_2 - 1} (1 - \beta)^{\sum_{i \not\in \{1, 2 \}} \alpha_i + y_i - 1} d\beta$$
+$$\alpha^{\alpha_1 + y_1 - 1} (1 - \alpha)^{\alpha_2 + y_2 - 1} \cdot c$$
+$$\implies \alpha \lvert y \sim \text{Beta}(\alpha_1 + y_1, \alpha_2 + y_2)$$
+
+### 3.1 (b)
+
+Show that this distribution is identical to treating $y_1$ as an observation from $\text{Binomial}(y_1 + y_2, \alpha)$:
+
+$$p(\alpha) \propto \alpha^{\alpha_1 - 1} (1 - \alpha)^{\alpha_2 - 1}$$
+$$p(y_1 \lvert \alpha) \propto \alpha^{y_1}(1 - \alpha)^{y_2}$$
+$$\implies p(\alpha \lvert y_1) \propto \alpha^{\alpha_1 + y_1 - 1}(1 - \alpha)^{\alpha_2 + y_2 - 1}$$
+
+## 3.2 Comparison of multinomial observations
+
+In pre-debate poll of 1988 presidential debate, 294 respondents showed a preference for George W. Bush and 307 showed preference for Michael Dukakis. In the post-debate poll, 288 showed preference for Bush and 332 for Dukakis. 
+
+For $\alpha_j$, $j=1, 2$, let $\alpha_j$ be the proportion of voters who preferred Bush, out of those who had preference for either Bush or Dukakis at poll time $j$. Plot histogram of the posterior density of $\alpha_2 - \alpha_1$. What is the posterior probability that there was a shift towards Bush?
+
+```{r}
+
+a1 <- rbeta(1e4, 295, 308)
+a2 <- rbeta(1e4, 289, 333)
+
+hist(a2 - a1, axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(alpha[1] - alpha[2]), ylab = 'Count')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+mean((a2 - a1) > 0)
+
+```
+
+There's only around `r round(mean(a2 - a1) > 0, 2)` probability that the post-debate opinion shifted towards Bush.
+
+## 3.3 Estimation of two independent experiments
+
+Measurement of the effect of magnetic fields on the calcium flow in chickens' brains were taken for two groups of chickens. In the control group, the mean of 32 measurements was 1.013 with a standard deviation of 0.24. In the treatment group, the mean of 36 measurements was 1.173 with a standard deviation of 0.2.
+
+### 3.3 (a)
+
+Assuming a uniform prior on $(\mu_c, \mu_t, log(\sigma_c), log(\sigma_t))$ and that the samples were taken from a normal distribution, what are the posterior distributions of $\mu_c$ and $\mu_t$?
+
+$$\mu_c \lvert \mathbf{y} = t_{31}(1.013, 0.24^2 / 32)$$
+$$\mu_t \lvert \mathbf{y} = t_{35}(1.173, 0.20^2 / 36)$$
+
+### 3.3 (b)
+
+What is the posterior distribution for $\mu_t - \mu_c$? Plot histogram & give approximate 95% credible interval. 
+
+```{r}
+
+mu_c <- (0.24 / sqrt(32)) * rt(1e4, 31) + 1.013
+mu_t <- (0.2 / sqrt(36)) * rt(1e4, 35) + 1.173 
+
+mu_diff <- mu_t - mu_c
+
+mu_diff_ci <- quantile(mu_diff, c(0.025, 0.975))
+
+hist(mu_diff, axes = FALSE, main = NULL,
+     breaks = 20, col = 'steelblue', border = 'white',
+     xlab = expression(mu[t] - mu[c]), ylab = 'Count')
+abline(v = mu_diff_ci, lty = 'dashed', col = 'grey60')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+```
+
+## 3.4 Inference for a 2 x 2 table
+
+Patients received either treatment or control. Out of 674 patients receiving the control, 39 died, out of the 680 patients receiving treatment, 22 died. Assume that the outcomes are Binomially distributed, with probabilities $p_0$ and $p_1$ for control and treament groups respectively.
+
+### 3.4 (a)
+
+Set up a non-informative prior distribution on $(p_0, p_1)$ and obtain posterior samples.
+
+```{r}
+
+# Sample thetas from independent Beta distributions
+# with non-informative Beta(1, 1) priors
+theta0_1 <- rbeta(1e4, 40, 675)
+theta1_1 <- rbeta(1e4, 23, 680)
+
+or1 <- (theta1_1 / (1 - theta1_1)) / (theta0_1 / (1 - theta0_1))
+
+# Sample thetas from independent Beta distributions
+# with a Jeffrey's Beta(1/2, 1/2) prior 
+theta0_2 <- rbeta(1e4, 39.5, 674.5)
+theta1_2 <- rbeta(1e4, 22.5, 679.5)
+
+or2 <- (theta1_2 / (1 - theta1_2)) / (theta0_2 / (1 - theta0_2))
+
+hist(or1, axes = FALSE, main = NULL,
+     breaks = seq(0, 2, 0.05), 
+     col = colt('steelblue', 0.5), border = 'white',
+     xlab = 'Odds ratio', ylab = 'Count')
+hist(or2, axes = FALSE, main = NULL,
+     breaks = seq(0, 2, 0.05), 
+     col = colt('indianred', 0.25), border = 'white',
+     xlab = 'Odds ratio', ylab = 'Count', add = TRUE)
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+quantile(or1, c(0.025, 0.975))
+quantile(or2, c(0.025, 0.975))
+
+```
+
+### 3.4 (c)
+
+Discuss sensitivity of your inference to your choice of non-informative prior.
+
+The inference doesn't seem to be very strongly affected by choice of a "flat" non-informative $\text{Beta}(1, 1)$ prior or a Jeffrey's $\text{Beta}(1/2, 1/2)$ prior.
+
+
 # Chapter 4
 
 ## 4.1 Normal approximation: Cauchy
@@ -864,3 +1228,44 @@ var_ld50 <- as.numeric(t(jacob) %*% var_theta %*% jacob)
 ```
 
 The Wald confidence interval seems to roughly correspond to the histogram on page 87.
+
+# Miscallaneous
+
+## M.1 Student-t posterior from normal data & non-informative prior
+
+Let:
+
+$$p(\mu, \sigma^2 ) \propto \frac{1}{\sigma^2} \qquad \text{(i.e. uniform prior on } (\mu, log(\sigma))$$
+and:
+
+$$p(\mathbf{y} \lvert \mu, \sigma^2) \propto \frac{1}{\sigma^n} exp \bigg( -\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2 \bigg) $$
+
+(i.e. class normal model with independent observations)
+
+Then:
+
+$$p(\mu, \sigma^2 \lvert \mathbf{y}) \propto \sigma^{-n - 2}  exp \bigg( -\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2 \bigg)$$
+$$= \sigma^{-n - 2}  exp \bigg( -\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \bar y + \bar y - \mu)^2 \bigg)$$
+$$= \sigma^{-n - 2}  exp \bigg( -\frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \bar y)^2 + (\bar y - \mu)^2 \bigg)$$
+$$= \sigma^{-n - 2}  exp \bigg( -\frac{1}{2\sigma^2} [(n-1)s^2 + n(\bar y - \mu)^2] \bigg)$$
+
+Where $\bar y$ and $s^2$ are sample mean and variable, respectively. Now:
+
+$$p(\mu \lvert \mathbf{y}) = \int_{\sigma_2} p(\mu, \sigma^2 \lvert \mathbf{y}) d\sigma^2$$
+$$= \int_0^\infty \sigma^{-n - 2}  exp \bigg( -\frac{1}{2\sigma^2} [(n-1)s^2 + n(\bar y - \mu)^2] \bigg)$$
+
+Let $A = [(n-1)s^2 + n(\bar y - \mu)^2]$ and $z = \frac{A}{2 \sigma^2}$. Then:
+
+$$\frac{1}{2 \sigma^2} = \frac{z}{A} = zA^{-1}; \qquad \frac{1}{\sigma} \propto \frac{\sqrt{z}}{\sqrt{A}} = z^{\frac{1}{2}}A^{-\frac{1}{2}}; \qquad \frac{\partial \sigma^2}{\partial z} \propto z^{-\frac{3}{2}} A^{-\frac{1}{2}}$$
+
+Thus:
+
+$$p(\mu \lvert \mathbf{y}) \propto \int_0^\infty (z^{\frac{1}{2}} A^{-\frac{1}{2}})^{n + 2} exp \bigg( \frac{z}{A} \cdot A \bigg) \cdot z^{-2} A \; dz$$
+$$= A^{-\frac{n}{2}} \int_0^\infty z^{\frac{n}{2} - 1} exp(-z) dz$$
+$$= A^{-\frac{n}{2}} \cdot c \qquad \text{(recognizing the above as Gamma integral)}$$
+$$= [(n - 1)s^2 + n(\bar y - \mu)^2]^{-\frac{n}{2}}$$
+$$= \bigg[1 + \frac{n(\bar y - \mu)^2}{(n-1)s^2} \bigg]^{-\frac{n}{2}}$$
+
+Therefore:
+
+$$\mu \lvert \mathbf{y} \sim t_{n-1} \bigg(\bar y, \frac{s^2}{n} \bigg)$$
