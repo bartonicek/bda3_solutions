@@ -919,11 +919,9 @@ axis(1, tick = FALSE)
 axis(2, tick = FALSE, las = 1)
 box(bty = 'L', col = 'grey60')
 
-mean((a2 - a1) > 0)
-
 ```
 
-There's only around `r round(mean(a2 - a1) > 0, 2)` probability that the post-debate opinion shifted towards Bush.
+There's only around `r round(mean((a2 - a1) > 0), 2)` probability that the post-debate opinion shifted towards Bush.
 
 ## 3.3 Estimation of two independent experiments
 
@@ -1004,7 +1002,361 @@ quantile(or2, c(0.025, 0.975))
 
 Discuss sensitivity of your inference to your choice of non-informative prior.
 
-The inference doesn't seem to be very strongly affected by choice of a "flat" non-informative $\text{Beta}(1, 1)$ prior or a Jeffrey's $\text{Beta}(1/2, 1/2)$ prior.
+The inference doesn't seem to be very strongly affected by either the choice of a "flat", non-informative $\text{Beta}(1, 1)$ prior or a Jeffrey's $\text{Beta}(1/2, 1/2)$ prior.
+
+## 3.5 Rounded data
+
+Let $y = (10, 10, 12, 11, 9)$ be five measurements of an object rounded to the nearest pound. Assume that the unbounded measurements are normally distributed with mean $\mu$ and variance $\sigma^2$.
+
+### 3.5 (c) 
+
+Give the posterior distribution obtained by pretending the observations are exact, unbounded measurements.
+
+```{r}
+
+y <- c(10, 10, 12, 11, 9)
+(post_mean <- mean(y))
+(s2 <- var(y))
+(post_var <- s2 / 5)
+
+```
+
+Assuming a uniform prior on $(\mu, log(\sigma))$, the posterior for $(\mu, \sigma^2)$ will be:
+
+$$p(\mu, \sigma^2 \lvert y) \propto \sigma^{-n - 2} exp \bigg( -\frac{1}{2\sigma^2} [(n-1)s^2 + n(\bar y -\mu) ] \bigg)$$
+
+The marginal posterior for $\mu$ will be:
+
+$$\mu \lvert y \sim t_{4} \bigg(10.4, \frac{1.3}{5} \bigg)$$
+The marginal posterior for $\sigma^2$ will be:
+
+$$\sigma^2 \lvert y \sim \text{Inverse-} \chi^2 (4, 1.3)$$
+
+```{r}
+
+# Compute posterior density two different ways:
+# 1) Rescale y by post. mean and variance & feed it into dt()
+# 2) Draw t(0, 1, 4) samples & rescale by post. mean and variance
+mu <- seq(4, 16, 0.01)
+post_mu <- dt((mu - 10.4) / sqrt(post_var), 4)
+post_mu <- post_mu / sum(post_mu)
+mu_s <- sqrt(post_var) * rt(1e4, 4) + 10.4
+
+hi <- hist(mu_s, axes = FALSE, main = NULL, freq = FALSE,
+     breaks = 30, col = 'steelblue', border = 'white',
+     xlab = expression(mu), ylab = 'Density')
+lines(mu, post_mu * (max(hi$density) / max(post_mu)), 
+      type = 'l', col = 'indianred', lwd = 2)
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+legend('topright', lwd = 4, 
+       col = c('steelblue', 'indianred'),
+       legend = c('Posterior draws', 'Posterior density'))
+
+# The posterior draws, the grid-computed analytic density,
+# and a frequentist t-test give roughly the same answers
+mu[sapply(c(0.025, 0.975), function(x) 
+  min(which(cumsum(post_mu) > x)))]
+quantile(mu_s, c(0.025, 0.975))
+t.test(y)
+
+# For variance, I'll just plot the histogram of posterior samples
+# (could do the same as above though)
+sigma2_s <- (4 * s2) / rchisq(1e3, 4) # Sample from Inverse-Chisquare
+hist(sigma2_s, axes = FALSE, main = NULL, freq = FALSE,
+     breaks = 50, col = 'steelblue', border = 'white',
+     xlab = expression(sigma^2), ylab = 'Density')
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+### 3.5 (b)
+
+Give the correct posterior distribution for $(\mu, \sigma^2)$ treating the measurements as rounded.
+
+Again, using a noninformative prior density that is uniform on $(\mu, log(\sigma))$:
+
+$$p(\mu, \sigma^2 \lvert y) \propto \frac{1}{\sigma^2} \prod_{i=1}^n \bigg( \Phi \bigg( \frac{y_i + 0.5 - \mu}{\sigma}  \bigg) - \bigg( \frac{y_i - 0.5 - \mu}{\sigma}  \bigg) \bigg)$$
+
+### 3.5 (c)
+
+How do the correct and incorrect posterior distributions differ?
+
+```{r}
+
+mu <- seq(10.4 - 3, 10.4 + 3, length = 100)
+log_sigma <- seq(-1, 2, length = 100)
+
+llfun1 <- function(a, b) {
+  ll <- 0
+  for (i in 1:5) ll <- ll + dnorm(y[i], a, b, log = TRUE)
+  return(ll)
+}
+
+llfun2 <- function(a, b) {
+  ll <- 0
+  for (i in 1:5) ll <- ll + log(pnorm(y[i] + 0.5, a, b) -
+                                  pnorm(y[i] - 0.5, a, b))
+  return(ll)
+}
+
+post1 <- outer(mu, exp(log_sigma), llfun1)
+post2 <- outer(mu, exp(log_sigma), llfun2)
+post1 <- exp(post1 - max(post1))
+post2 <- exp(post2 - max(post2))
+
+par(mfrow = c(1, 2))
+
+contour(mu, log_sigma, post1, drawlabels = FALSE, axes = FALSE,
+        xlab = expression(mu), ylab = expression(log(sigma)),
+        main = 'Unbounded', col = 'steelblue')
+box(bty = 'L', col = 'grey60')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+contour(mu, log_sigma, post2, drawlabels = FALSE, axes = FALSE,
+        xlab = expression(mu), ylab = expression(log(sigma)),
+        main = 'With rounding', col = 'steelblue')
+box(bty = 'L', col = 'grey60')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+
+```
+
+The two posteriors look largely similar. The posterior that account for rounding has slightly wider range for $log(\sigma)$, suggesting that correctly accounting for rounding introduces more uncertainty into our estimates of the variance of $y$.
+
+### 3.5 (d)
+
+Let $z = (z_1, z_2, z_3, z_4, z_5)$ be the original unbounded measurements. Draw simulations from the posterior distribution and and compute the posterior mean of $(z_2 - z_1)^2$
+
+I decided to tackle the problem using rejection sampling:
+
+```{r}
+
+# First draw imperfect samples from the unbounded posterior
+mu_s <- rnorm(1e4, post_mean, sqrt(post_var))
+sigma2_s <- (4 * s2) / rchisq(1e3, 4)
+
+p <- runif(1e4)
+py <- sum(log(pnorm(y, )))
+
+ll <- sapply(y, function(x) log(pnorm(y + 0.5, mu_s, sigma2_s) -
+                            pnorm(y - 0.5, mu_s, sigma2_s)))
+lik <- exp(rowSums(ll))
+lik <- lik / max(lik)
+
+p <- runif(1e4)
+
+mu_s2 <- mu_s[lik > p]
+sigma2_s2 <- sigma2_s[lik > p]
+
+hist(mu_s2)
+
+```
+
+## 3.6 Binomial model with unknown probability and sample size
+
+We observed data $y_i$ coming from a $\text{Binomial}(N, \theta)$ distribution with unknown probability $\theta$ and unknown sample size $N$. Raftery (1988) modelled $N$ as coming from $\text{Poisson}(\mu)$ distribution, with a prior on $\lambda = \mu \theta$.
+
+### 3.6 (a)
+
+Let the prior distribution be $p(\lambda, \theta) = \frac{1}{\lambda}$. What is the motivation for this non-informative prior distribution? Is the distribution proper? Transform to determine $p(N, \theta)$.
+
+The above prior distribution, $p(\lambda, \theta) = \frac{1}{\lambda}$, is a standard non-informative prior distribution that is uniform on $log(\lambda)$. The distribution is clearly improper (since it does not integrate to 1).
+
+To find the prior distribution on $p(N, \theta$, we first need to find $p(\mu, \theta)$ by applying the change of variable technique:
+
+$$\mu = \mu(\lambda, \theta) = \frac{\lambda}{\theta}; \qquad \theta = \theta(\lambda, \theta) = \theta$$
+$$\lambda = \lambda(\mu, \theta) = \mu \theta; \qquad \theta = \theta(\mu, \theta) = \theta$$
+$$\lvert D \lvert = \begin{vmatrix} \theta & \mu \\ 0 & 1  \end{vmatrix} = \theta$$
+$$p(\theta, \mu) = p_{\lambda, \theta}(\lambda(\mu, \theta), \theta(\mu, \theta)) \lvert D \lvert = \frac{1}{\mu \theta} \cdot \theta = \frac{1}{\mu}$$
+
+Hence, by independence: $p(\mu) = \frac{1}{\mu}$. Now to find the prior $p(N, \mu)$:
+
+$$p(N, \mu) = p(N \lvert \mu)p(\mu) = \frac{\mu^N e^{- \mu}}{N!} \cdot \frac{1}{\mu}$$
+$$= \frac{\mu^{N - 1} e^{-\mu}}{N!}$$
+
+Finally, to get the prior on $N$, we need to integrate across $\mu$:
+
+$$p(N) = \int_{0}^\infty \frac{\mu^{N - 1} e^{-\mu}}{N!} d \mu$$
+$$= \frac{1}{N!} \int_0^\infty \mu^{N - 1} e^{-\mu} d\mu$$
+$$= \frac{1}{N!} \cdot \Gamma(N)$$
+$$= \frac{(N - 1)!}{N!} = \frac{1}{N}$$
+
+Hence the prior for $(N, \theta)$ will be:
+
+$$p(N, \theta) = \frac{1}{N}$$
+And the posterior will be:
+
+$$p(N, \theta \lvert y) \propto \frac{1}{N} \cdot \prod_{i=1}^n {N \choose y_i} \theta^{ y_i} (1 - \theta)^{N - y_i}$$
+
+And the posterior for $N$ is:
+
+$$p(N \lvert y) \propto \frac{1}{N} \Bigg[ \prod_{i=1}^n {N \choose y_i} \Bigg] \int_0^1 \theta^{\sum_{i=1}^n y_i} (1 - \theta)^{\sum_{i=1}^n N - y_i}$$
+$$= \frac{1}{N} \Bigg[ \prod_{i=1}^n {N \choose y_i} \Bigg] \cdot \frac{\Gamma(1 + \sum_{i=1}^n y_i) \Gamma(1 + \sum_{i=1}^n N - y_i)}{\Gamma(2 + \sum_{i=1}^n N)}$$
+$$= \frac{1}{N} \frac{(\sum_{i=1}^n y_i)! (nN - \sum_{i=1}^ny_i)!}{N(nN + 1)!} \Bigg[ \prod_{i=1}^n {N \choose y_i} \Bigg]$$
+
+### 3.6 (b)
+
+Counts of waterbuck were observed on five separate days in the Kruger Park in South Africa: $y = (53, 57, 66, 67, 72)$. Obtain the posterior for $(N, \theta)$ and display a scatterplot of posterior simulations. What is the posterior probability of $N > 100$?
+
+```{r}
+
+y <- c(53, 57, 66, 67, 72)
+N <- max(y):1000
+theta <- seq(0.01, 0.99, 0.01)
+
+prior <- outer(N, theta, function(a, b) 1/a)
+lpost <- prior
+
+sum_y <- sum(y)
+
+# Calculate the log of the posterior density across the grid
+for (i in seq_len(nrow(lpost))) {
+  for (j in seq_len(ncol(lpost))) {
+    lpost[i, j] <- -log(N[i]) + sum(lchoose(N[i], y)) + 
+      sum_y * log(theta[j]) + 
+      (5 * N[i] - sum_y) * log(1 - theta[j])
+  }
+} 
+
+contour(N, theta, exp(lpost), drawlabels = FALSE,
+        col = 'steelblue', axes = FALSE,
+        xlab = 'N', ylab = expression(theta))
+axis(1, tick = FALSE)
+axis(2, las = 1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+# Marginal posterior density for N
+post_N <- rowSums(exp(lpost))
+post_N <- post_N / sum(post_N)
+
+plot(post_N, type = 'l', col = 'steelblue',
+     lwd = 2, axes = FALSE, 
+     xlab = 'N', ylab = 'Posterior density')
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+sum(post_N[N > 100])
+
+```
+
+There is about 95% posterior probability than $N$ is greater than 100.
+
+### 3.6 (c)
+
+Why not simply use a Poisson with fixed $\mu$ as a prior distribution for N?
+
+If we used a $p(N) = \frac{\mu^N e^{-\mu}}{N!}$ prior, then the joint posterior density would not factorize as nicely as above. 
+
+## 3.7 Poisson and binomial distributions
+
+A students sits on a street corner for an hour and records the number of bicycles $b$ and the number of other vehicles $v$. Two models are considered:
+
+- The outcomes $b$ and $v$ have independents Poisson distributions, with unknown means $\theta_b$ and $\theta_v$
+- The outcome $b$ has a binomial distribution, with unknown probability $p$ and size $b + v$
+
+Show that the models have the same likelihood if we define $p = \frac{\theta_b}{\theta_b + \theta_v}$:
+
+$$p(b, v \lvert \theta_b, \theta_v) = \frac{\theta_b^b e^{-\theta_b}}{b!} \cdot \frac{\theta_v^v e^{-\theta_v}}{v!} = \frac{\theta_b^b \theta_v^v e^{- \theta_b - \theta_v}}{b! v!}$$
+
+Now apply change of variable:
+
+$$p = p(\theta_b, \theta_v) = \frac{\theta_b}{\theta_b + \theta_v}; \qquad z = z(\theta_b, \theta_v) = \theta_b + \theta_v$$
+$$\theta_b = \theta_b (p, z) = pz; \qquad \theta_v = \theta_v (p, z) = z - pz = z(1 - p)$$
+$$\lvert D \lvert = \begin{vmatrix} z & p \\ -z & 1 - p \end{vmatrix} = z(1 - p) - p(-z) = z$$
+$$\implies p_{p,z }(b, v \lvert p, z) = p_{\theta_b, \theta_v} (\theta_b(p,z) , \theta_v (p,z)) \cdot \lvert D \lvert$$
+$$= \frac{(pz)^b [z(1 - p)]^v e^{-zp -z(1 - p)}}{b! v!}$$
+$$= \frac{1}{b! v!} p^b z^{b + v} (1 - p)^v e^{-z}$$
+$$= \frac{1}{b! v!} p^b (1 - p)^v z^{b + v} e^{-z}$$
+
+Now we integrate across $z$:
+
+$$p(b \lvert p, v) = \frac{1}{b! v!} p^b (1 - p)^v \int_{0}^\infty z^{b + v} e^{-z} dz$$
+$$= \frac{1}{b! v!} p^b (1 - p)^v \cdot \Gamma (b + v + 1)$$
+$$= \frac{(b + v)!}{b! v!} p^b (1 - p)^v$$
+$$= {b + v \choose b} p^b (1 - p)^v = p(b \lvert p, v)$$
+
+## 3.8 Analysis of proportions
+
+A survey was done in which sixty city blocks were selected at random, each block was observed for an hour, an the number of bicycles and other vehicles were recorded. Data from street with and without bike routes were compared. 
+
+```{r}
+
+w_lanes_bic <- c(16, 9, 10, 13, 19, 20, 18, 17, 35, 55)
+w_lanes_all <- c(58, 90, 48, 57, 103, 57, 86, 112, 273, 64)
+wo_lanes_bic <- c(12, 1, 2, 4, 9, 7, 9, 8)
+wo_lanes_all <- c(113, 18, 14, 44, 208, 67, 29, 154)
+
+```
+
+### 3.8 (a)
+
+Let $y_1, y_2, \ldots, y_{10}$ and $z_1, z_2, \ldots, z_{8}$ be the observed proportions of bicycles out of overall traffic on streets with and without lanes. Set up the model so that $y_i$'s and $z_i$'s are independent and identically distributed with parameters $\theta_y$ and $\theta_z$
+
+$$y_i \sim \text{Poisson}(a_i \theta_y)$$
+$$z_i \sim \text{Poisson}(b_i \theta_z)$$
+
+$$\implies p(y_i \lvert \theta_y, a_i) = \frac{(a_i \theta_y)^{y_i} e^{- a_i \theta_y}}{y_i!}; \qquad p(z_i \lvert \theta_z, b_i) = \frac{(b_i \theta_z )^{z_i} e^{- b_i \theta_z}}{z_i!}$$
+
+### 3.8 (b)
+
+Set up a prior distribution that is independent in $\theta_y$ and $\theta_z$:
+
+$$p(\theta_y, \theta_z) = p(\theta_y) \cdot p(\theta_z) = \frac{1}{\theta_y} \cdot \frac{1}{\theta_z}$$
+
+### 3.9 (c)
+
+Determine the posterior and draw 1,000 simulations from the posterior distribution:
+
+$$p(\theta_y, \theta_z \lvert y, z, a, b) = p(\theta_y \lvert y, a) \cdot p(\theta_z \lvert z, b)$$
+$$= \frac{1}{\theta_y} \cdot \prod_{i=1}^{10} \frac{(a_i \theta_y)^{y_i} e^{- a_i \theta_y}}{y_i!} \cdot \frac{1}{\theta_z} \prod_{i=1}^8 \frac{(b_i \theta_z)^{z_i} e^{-b_i \theta_z}}{z_i!}$$
+$$\propto \bigg( \theta_y^{\sum_{i=1}^{10} y_i -1} e^{- \theta_y \sum_{i=1}^{10} a_i} \bigg) \bigg( \theta_z^{\sum_{i=1}^8 z_i}  e^{- \theta_z \sum_{i=1}^8 b_i} \bigg)$$
+
+```{r}
+
+theta_y <- rgamma(1e3, sum(w_lanes_bic), sum(w_lanes_all))
+theta_z <- rgamma(1e3, sum(wo_lanes_bic), sum(wo_lanes_all))
+
+```
+
+### 3.8 (d)
+
+Let $\mu_y = E(y_i \lvert \theta_y)$ be the mean of the distribution of $y_i$'s and $\mu_z = E(z_i \lvert \theta_z)$ be the mean of the distribution of $z_i$'s. Use the posterior simulations from **(c)** to compute $\mu_y$ and $\mu_z$ and plot a histogram of $\mu_y - \mu_z$.
+
+```{r}
+
+mu_y <- sapply(theta_y, function(x) 
+  mean(rpois(10, x * w_lanes_all)))
+mu_z <- sapply(theta_z, function(x) 
+  mean(rpois(8, x * wo_lanes_all)))
+
+hist(mu_y - mu_z, main = NA, breaks = 20,
+     axes = FALSE, col = 'steelblue', border = 'white',
+     xlab = expression(mu[y] - mu[z]), ylab = 'Count')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+```
+
+## 3.9 Conjugate Normal model
+
+Let $y_i \sim \text{Normal}(\mu, \sigma^2)$ and the prior distribution on $(\mu, \sigma^2)$ be $\text{N-Inv-}\chi^2 (\mu_0,\sigma_0^2 / \kappa_0; \nu_0, \sigma^2_0)$. The posterior for $(\mu, \sigma^2)$ is also Normal-Inverse-$\chi^2$: derive its parameters in terms of prior parameters and sufficient statistics.
+
+$$p(\mu, \sigma^2) \propto \sigma^{-1} exp \bigg(-\frac{\kappa_0}{2 \sigma^2}(\mu - \mu_0)^2 \bigg) \cdot  (\sigma^2)^{- (\nu_0/2 + 1)} exp \bigg(-\frac{1}{2 \sigma^2} (\nu_0 \sigma_0^2) \bigg)$$
+$$= \sigma^{-1} (\sigma^2)^{- (\nu_0 /2 + 1)} exp \bigg(-\frac{1}{2\sigma^2} [\nu_0 \sigma_0^2 + \kappa_0 (\mu_0 - \mu)^2] \bigg) $$
+
+$$p(\mu, \sigma^2 \lvert y) = p(y \lvert \mu, \sigma^2) p(\mu, \sigma^2)$$
+$$\propto (\sigma^2)^{-\frac{n}{2}} exp \bigg(-\frac{(n - 1)s^2 + n(\mu - \bar y)^2}{2\sigma^2} \bigg) \cdot \sigma^{-1} (\sigma^2)^{- (\nu_0 /2 + 1)} exp \bigg(-\frac{1}{2\sigma^2} [\nu_0 \sigma_0^2 + \kappa_0 (\mu_0 - \mu)^2] \bigg) $$
+$$\propto= \sigma^{-1}(\sigma^2)^{-\frac{n + \nu_0}{2} - 1} exp \bigg( \frac{\nu_0 \sigma_0^2 + (n - 1)s^2 + \mu^2(n + \kappa_0) - 2\mu(n \bar y + \kappa_0 \mu_0) + n \bar y^2 + \kappa_0 \mu_0^2 }{2 \sigma^2} \bigg)$$
+$$\propto= \sigma^{-1}(\sigma^2)^{-\frac{n + \nu_0}{2} - 1} exp \bigg( \frac{\nu_0 \sigma_0^2 + (n - 1)s^2 + \frac{n \kappa_0 (\bar y - \mu_0)^2}{n + \kappa_0} + (n + \kappa_0)(\mu - \frac{n \bar y + \kappa_0 \mu_0}{n + \kappa_0})^2}{2 \sigma^2} \bigg) \qquad \text{(completing the square)}$$
+Thus:
+
+$$\mu, \sigma^2 \lvert y \sim \text{N-Inv-}\chi^2 \bigg( \frac{n \bar y + \kappa_0 \mu_0}{n + \kappa_0}, \frac{\sigma_n^2}{n + \nu_0}; n + \nu_0, \sigma^2_n \bigg)$$
+where:
+
+$$\sigma^2_n = \frac{\nu_0 \sigma_0^2 + (n-1)s^2 + \frac{n \kappa_0 (\bar y - \mu_0)^2}{n + \kappa_0}}{n + \nu_0}$$
 
 
 # Chapter 4
@@ -1228,6 +1580,208 @@ var_ld50 <- as.numeric(t(jacob) %*% var_theta %*% jacob)
 ```
 
 The Wald confidence interval seems to roughly correspond to the histogram on page 87.
+
+## 4.4 Asymptotic Normality
+
+Assuming regularity conditions, we know that $p(\theta \lvert y)$ approaches normality as $n \to \infty$. In addition, if $\phi= f(\theta)$ is any one-to-one continuous transformation of $\theta$, we can express the Bayesian inference in terms of $\phi$ and find that $p(\phi \lvert y)$ also approaches normality. But a non-linear transformation is no longer normal. How can both limiting normal distributions be valid?
+
+As $n \to \infty$, posterior variance approaches zero, and so $p(\theta \lvert y)$ will converge to a single point. Any one-to-one continuous transformation will be locally linear in the neighbourhood of that point.
+
+## 4.5 Approximate mean and variance of $\frac{Y}{X}$
+
+Let $X$ and $Y$ be independent normally distributed random variables where $X$ has mean 4 and standard deviation 1, and $Y$ has mean 3 and standard deviation 2. What is the approximate mean and variance of $\frac{Y}{X}$? 
+
+### (a)
+
+Compute using simulation:
+
+```{r}
+
+set.seed(1234)
+x <- rnorm(1e4, 4, 1)
+y <- rnorm(1e4, 3, 2)
+
+z <- y/x
+
+hist(z, axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(y/x), ylab = 'Count')
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+mean(z)
+var(z)
+
+```
+
+### (b)
+
+Determine without using simulation.
+
+To approximate the ratio, we have to use a (bivariate) Taylor series approximation. We have the function:
+
+$$f(x, y) = \frac{Y}{X}$$
+
+The derivatives of this function with respect to $X$ and $Y$ are:
+
+$$f_x' = -\frac{Y}{X^2}; \qquad f_x'' = \frac{2X}{Y^3}$$
+$$f_{xy}'' = f_{yx}'' = -\frac{1}{X^2}$$ 
+$$f_y' = \frac{1}{X}; \qquad f_y'' = 0$$
+A first order Taylor series approximation of $f(x, y)$ about the joint mean/centroid $\mathbf{\mu} = (\mu_X, \mu_Y)$ is:
+
+$$f(x, y) \approx f(\mathbf{\mu}) + f'_x(x - \mu_X) + f_y'(y - \mu_Y)$$
+If we take an expectation of this, we get:
+
+$$E[f(x, y)] \approx E[f(\mathbf{\mu}) +  f'_x(\mathbf{\mu})(x - \mu_X) + f_y'(\mathbf{\mu})(y - \mu_Y)]$$
+$$= E[f(\mathbf{\mu})] +  f'_x(\mathbf{\mu}) E[(x - \mu_X)] + f_y'(\mathbf{\mu}) E[(y - \mu_Y)]$$
+$$E[f(\mathbf{\mu})] + 0 + 0$$
+$$= f(\mathbf{\mu}) = \frac{\mu_Y}{\mu_X}$$
+
+However, we can do better. A second order Taylor series approximation of the function $f(x, y)$ is:
+
+$$f(x, y) \approx f(\mathbf{\mu}) + f'_x(\mathbf{\mu})(x - \mu_X) + f_y' (\mathbf{\mu})(y - \mu_Y) + \frac{1}{2} \bigg[ f_{xx}''(\mathbf{\mu}) (x - \mu_X)^2 + 2 f_{xy}(\mathbf{\mu}) (x - \mu_X)(y - \mu_Y) + f_{yy}''(\mathbf{\mu})(y \ mu_y)^2 \bigg]$$
+
+Again, taking the expectation, we get:
+
+$$E[f(x, y)] \approx E[f(\mathbf{\mu})] + 0 + 0 + \frac{1}{2} \cdot \frac{2\mu_Y}{\mu_X^3} \cdot E[(x - \mu_X)^2] + \bigg( - \frac{1}{\mu_X^2} \bigg) \cdot E[(x - \mu_X)(y - \mu_Y)] + 0 \cdot E[(y - \mu_Y)^2]$$
+$$= \frac{\mu_Y}{\mu_X} + \frac{\mu_Y}{\mu_X^3} Var(X) - \frac{1}{\mu_X^2} Cov(X, Y)$$
+
+Since the two variables are independent, $Cov(X, Y) = 0$ and so:
+
+$$E \bigg( \frac{Y}{X} \bigg) = \frac{\mu_Y}{\mu_X} + \frac{\mu_Y}{\mu_X^3} Var(X) = \frac{3}{4} + \frac{3}{64} \cdot 1^2 \approx 0.797$$
+
+Which is pretty close to the answer we got from the simulation above.
+
+As for variance, technically $Var \bigg( \frac{Y}{X} \bigg) = \infty$ as $n \to \infty$, if the denominator $X$ assigns nonzero probability for values close to zero, which it does since $X$ is a normally distributed. However, that shouldn't bother us too much if the mean of $X$ is far from zero and the standard deviation is small, meaning that we are unlikely to get those troublesome values near zero. Therefore, we can approximate variance with the Delta method (i.e. a Taylor series shortcut):
+
+$$Var \bigg( \frac{Y}{X} \bigg) = \mathbf{G V G^T}$$
+
+where $\mathbf{G}$ is the Jacobian matrix:
+
+$$\mathbf{G} = \begin{bmatrix} -\frac{Y}{X^2} \\ \frac{1}{X} \end{bmatrix} \approx \begin{bmatrix} -\frac{3}{16} \\ \frac{1}{4} \end{bmatrix}$$
+$$\implies Var \bigg( \frac{X}{Y} \bigg) \approx \begin{bmatrix} -\frac{3}{16} & \frac{1}{4} \end{bmatrix} \begin{bmatrix} 1 & 0 \\ 0 & 4 \end{bmatrix} \begin{bmatrix} -\frac{3}{16} \\ \frac{1}{4} \end{bmatrix} \approx 0.285$$
+
+```{r}
+
+G <- c(-3/16, 1/4)
+V <- matrix(c(1, 0, 0, 4), ncol = 2)
+
+approx_mean <- 3/4 + 3/64
+approx_var <- t(G) %*% V %*% G
+
+znew <- seq(min(z), max(z), length.out = 100)
+
+hist(z, axes = FALSE, main = NULL, freq = FALSE,
+     col = 'steelblue', border = 'white',
+     xlab = expression(y/x), ylab = 'Count', ylim = c(0, 0.75))
+lines(znew, dnorm(znew, approx_mean, sqrt(approx_var)), 
+      col = 'firebrick', lwd = 2)
+axis(1, tick = FALSE)
+axis(2, tick = FALSE, las = 1)
+box(bty = 'L', col = 'grey60')
+
+```
+
+The Taylor approximation seems to work pretty well. The variance is slightly underestimated, as could be expected due to the non-linearity of the transformation. 
+
+## 4.6 Statistical decision theory
+
+A decision-theoretic approach to estimation of an unknown parameter $\theta$ is to introduce a loss function $L(\theta, a)$ which gives the cost of deciding that a parameter has cost $a$ when it is in fact equal to $\theta$. The estimate can be chosen to minimize expected loss:
+
+$$E(L(\theta, a)) = \int L(\theta, a) p(\theta \lvert y) d\theta$$
+This optimal choice for $a$ is called the Bayes estimate for loss function $L$. Show that:
+
+### (a)
+
+If $L(\theta, a) = (\theta - a)^2$ (squared error loss), then the posterior mean, $E(\theta \lvert y)$, if it exists, is the unique Bayes estimate for $\theta$.
+
+$$\frac{\partial}{\partial a} \int L(\theta, a) p(\theta \lvert y) d \theta = \frac{\partial}{\partial a} \int (\theta - a)^2 p(\theta \lvert y) d \theta$$
+$$= \int \frac{\partial}{\partial a} (\theta - a)^2 p(\theta \lvert y) d \theta$$
+$$= \int 2(\theta - a) (-1) p(\theta \lvert y) d \theta$$
+$$= \int 2(a -  \theta ) p(\theta \lvert y) d \theta$$
+$$= 2 \cdot \int a \cdot p(\theta \lvert y) d \theta - 2 \cdot \int \theta \cdot p (\theta \lvert y ) d \theta$$
+$$= 2a \cdot \int p(\theta \lvert y) d \theta - 2 E(\theta \lvert y) = 2a - 2E(\theta \lvert y)$$
+Clearly, this will be zero when $a$ is the posterior mean $E(\theta \lvert y)$.
+
+### (b)
+
+If $L(\theta, a) = \lvert \theta - a \lvert $, then the posterior median of $\theta$ is the Bayes estimate of $\theta$.
+
+Using the answer from the following question, **(c)**:
+
+$$k_0 = k_1 = 1$$
+$$\implies \frac{k_0}{k_0 + k_1} = \frac{1}{1 + 1} = \frac{1}{2}$$
+
+Thus, the $a$ that minimizes the loss function is the 50th percentile of the posterior cumulative density function, i.e. the median. 
+
+### (c)
+
+If $k_0$ and $k_1$ are non-negative numbers, both nonzero, and:
+
+$$L(\theta, a) = \begin{cases} 
+k_0(\theta - a) & \text{if } \theta \geq a \\ 
+k_1(a - \theta) & \text{if } \theta < a
+\end{cases}$$
+
+$$\frac{\partial}{\partial a} E(L(a \lvert y)) = \frac{\partial}{\partial a} \Bigg[ \int_a^\infty k_0 (\theta - a) p(\theta \lvert y) d \theta + \int_{-\infty}^a k_1(a - \theta) p(\theta \lvert y) d \theta \Bigg]$$
+$$= \int_a^\infty \frac{\partial}{\partial a} k_0 (\theta - a) p(\theta \lvert y) d \theta + \int_{-\infty}^a \frac{\partial}{\partial a} k_1(a - \theta) p(\theta \lvert y) d \theta$$
+$$= - k_0 \int_{a}^\infty p(\theta \lvert y) d \theta + k_1 \int_{-\infty}^ a p(\theta \lvert y) d \theta$$
+$$= k_1 \int_{-\infty }^ a p(\theta \lvert y) d \theta - k_0 \bigg[1 - \int_{-\infty}^a p(\theta \lvert y) d \theta \bigg]$$
+$$= (k_0 + k_1) \int_{-\infty}^a p(\theta \lvert y) d \theta - k_0$$
+
+Now set to zero:
+
+$$ (k_0 + k_1) \int_{-\infty}^a p(\theta \lvert y) d \theta = k_0$$
+$$\implies \int_{-\infty}^a p(\theta \lvert y) d \theta = \frac{k_0}{k_0 + k_1}$$
+
+Therefore, $a$ is the $\frac{k_0}{k_0 + k_1}$th quantile of the posterior distribution.
+
+## 4.7 (Un)biasedness of the posterior mean
+
+Show that the posterior mean, based on a proper prior distribution, cannot be an unbiased estimator except in degenerate problems.
+
+Let the posterior mean be $m(y) = E(\theta \lvert y)$. For it to be unbiased estimator of $\theta$, the following would have to hold: $E( m(y) \lvert \theta) = \theta$. However, then we'd have:
+
+$$E(\theta m(y) ) = E[E(\theta m(y) \lvert \theta)] = E[\theta \cdot E(m(y) \lvert \theta)] = E[\theta^2]$$
+$$E(\theta m(y) ) = E[E(\theta m(y) \lvert y)] = E[m(y) \cdot E( \theta \lvert y)] = E[m(y)^2]$$
+Now, the variance of the estimator will be:
+
+$$E[(m(y) - \theta)^2] = E[m(y)^2] - 2 E[m(y)] E[\theta] + E[\theta^2]$$
+$$= E[m(y)^2] - 2 \theta^2 + \theta^2$$
+$$= E[m(y)^2] - \theta^2 = E[m(y)^2] - E[\theta^2]$$
+
+Using the above, we'd get $E[m(y)^2] - E[\theta^2] = E(\theta m(y) ) - E(\theta m(y) ) = 0$
+
+So if the posterior mean is unbiased as an estimator, its variance has to be zero. This is only the case when we have either infinite amount of data or other degenerate cases. So in all other scenarios, the posterior mean won't be unbiased. 
+
+## 4.8 Regression to the mean
+
+Let the height of mothers and daughters be normally distributed with known means of 160, equal variances, and correlation of 0.5. The posterior mean of $\theta$ is:
+
+$$E(\theta \lvert y) = 160 + 0.5 (y - 160)$$
+and given daughter's height, mother's height is distributed as:
+
+$$E(y \lvert \theta) = 160 + 0.5(\theta - 160)$$
+So the expectation of the posterior mean is:
+
+$$E[E(\theta \lvert y)] = E[160 + 0.5(y - 160)]$$
+$$= 160 + 0.5 \cdot [E(y) - 160]$$
+$$= 160 + 0.5 [160 + 0.5(\theta - 160) - 160]$$
+$$= 160 + 0.25(\theta - 160)$$
+As such, the expectation of the posterior mean is shrunk towards the grand mean of 160 and is therefore biased. In contrast, an estimate:
+
+$$\hat \theta = 160 + 2(y - 160)$$
+
+is unbiased since:
+
+$$E[\hat \theta] = E[160 + 2(y - 160)]$$
+$$= 160 + 2 \cdot E[y] - 2 \cdot 160$$
+$$= 2 \cdot [160 + 0.5(\theta - 160)] - 160$$
+$$= 2 \cdot [80 + 0.5 \theta] - 160 = \theta$$
+However, even though unbiased, this estimate clearly doesn't make sense since it estimates the parameter to be more extreme than the data: e.g. for a mother who's 10 centimeters taller than average, it will estimate that the daughter is 20 centimeters taller than average (i.e. the exact opposite of regression to the mean). This shows a downside to frequentist estimation, where an unknown quantity has to be treated differently depending on whether it's a "parameter" or a "prediction".
+
+
 
 # Miscallaneous
 
