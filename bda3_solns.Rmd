@@ -25,6 +25,12 @@ colt <- function(colour, alpha) {
   rgb(cc[1], cc[2], cc[3], alpha)
 }
 
+draw_axes <- function() {
+  axis(1, tick = FALSE)
+  axis(2, tick = FALSE, las = 1)
+  box(bty = 'L', col = 'grey60')
+}
+
 ```
 
 # Chapter 2
@@ -537,9 +543,7 @@ y6 <- rcauchy(1000, theta_s)
 hist(y6, axes = FALSE, main = NULL, breaks = 100,
      col = 'steelblue', border = 'white',
      xlab = expression(y[6]), ylab = 'Count')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 
 ```
@@ -581,9 +585,7 @@ y1986 <- rpois(1e3, theta_s)
 hist(y1986, axes = FALSE, main = NULL,
      col = 'steelblue', border = 'white',
      xlab = 'Predicted number of accidents in 1986', ylab = 'Count')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 quantile(y1986, c(0.025, 0.975))
 
@@ -603,9 +605,7 @@ y1986_2 <- rpois(1e3, theta_s * 8)
 hist(y1986_2, axes = FALSE, main = NULL,
      col = 'steelblue', border = 'white',
      xlab = 'Predicted number of accidents in 1986', ylab = 'Count')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 quantile(y1986_2, c(0.025, 0.975))
 
@@ -839,9 +839,7 @@ plot(dt3$pct_lib, dt3$vote_Obama_pct / 100,
      ylab = "Obama's vote share", xlim = c(0, 0.12))
 text(dt3$pct_lib, dt3$vote_Obama_pct / 100, 
      label = dt3$state)
-axis(1, tick = FALSE)
-axis(2, tick = FALSE)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 ```
 
@@ -915,9 +913,7 @@ a2 <- rbeta(1e4, 289, 333)
 hist(a2 - a1, axes = FALSE, main = NULL,
      col = 'steelblue', border = 'white',
      xlab = expression(alpha[1] - alpha[2]), ylab = 'Count')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 ```
 
@@ -951,9 +947,7 @@ hist(mu_diff, axes = FALSE, main = NULL,
      breaks = 20, col = 'steelblue', border = 'white',
      xlab = expression(mu[t] - mu[c]), ylab = 'Count')
 abline(v = mu_diff_ci, lty = 'dashed', col = 'grey60')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 ```
 
@@ -989,9 +983,7 @@ hist(or2, axes = FALSE, main = NULL,
      breaks = seq(0, 2, 0.05), 
      col = colt('indianred', 0.25), border = 'white',
      xlab = 'Odds ratio', ylab = 'Count', add = TRUE)
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 quantile(or1, c(0.025, 0.975))
 quantile(or2, c(0.025, 0.975))
@@ -1111,15 +1103,12 @@ par(mfrow = c(1, 2))
 contour(mu, log_sigma, post1, drawlabels = FALSE, axes = FALSE,
         xlab = expression(mu), ylab = expression(log(sigma)),
         main = 'Unbounded', col = 'steelblue')
-box(bty = 'L', col = 'grey60')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
+draw_axes()
+
 contour(mu, log_sigma, post2, drawlabels = FALSE, axes = FALSE,
         xlab = expression(mu), ylab = expression(log(sigma)),
         main = 'With rounding', col = 'steelblue')
-box(bty = 'L', col = 'grey60')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
+draw_axes()
 
 ```
 
@@ -1223,9 +1212,7 @@ for (i in seq_len(nrow(lpost))) {
 contour(N, theta, exp(lpost), drawlabels = FALSE,
         col = 'steelblue', axes = FALSE,
         xlab = 'N', ylab = expression(theta))
-axis(1, tick = FALSE)
-axis(2, las = 1, tick = FALSE)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 # Marginal posterior density for N
 post_N <- rowSums(exp(lpost))
@@ -1334,9 +1321,8 @@ mu_z <- sapply(theta_z, function(x)
 hist(mu_y - mu_z, main = NA, breaks = 20,
      axes = FALSE, col = 'steelblue', border = 'white',
      xlab = expression(mu[y] - mu[z]), ylab = 'Count')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
+
 
 ```
 
@@ -1517,9 +1503,7 @@ contour(anew, bnew, post_true, col = 'firebrick',
         xlab = expression(alpha), ylab = expression(beta))
 points(draws_approx[, 1], draws_approx[, 2], 
      pch = 19, col = colt('steelblue', 0.05))
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 legend('topright', col = c('firebrick', 'steelblue'),
        legend = c('True posterior', 'Normal approximation (samples)'),
        lwd = 1, border = 'grey60')
@@ -1606,9 +1590,7 @@ z <- y/x
 hist(z, axes = FALSE, main = NULL,
      col = 'steelblue', border = 'white',
      xlab = expression(y/x), ylab = 'Count')
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
 
 mean(z)
 var(z)
@@ -1677,9 +1659,8 @@ hist(z, axes = FALSE, main = NULL, freq = FALSE,
      xlab = expression(y/x), ylab = 'Count', ylim = c(0, 0.75))
 lines(znew, dnorm(znew, approx_mean, sqrt(approx_var)), 
       col = 'firebrick', lwd = 2)
-axis(1, tick = FALSE)
-axis(2, tick = FALSE, las = 1)
-box(bty = 'L', col = 'grey60')
+draw_axes()
+
 
 ```
 
@@ -1782,8 +1763,2102 @@ $$= 2 \cdot [80 + 0.5 \theta] - 160 = \theta$$
 However, even though unbiased, this estimate clearly doesn't make sense since it estimates the parameter to be more extreme than the data: e.g. for a mother who's 10 centimeters taller than average, it will estimate that the daughter is 20 centimeters taller than average (i.e. the exact opposite of regression to the mean). This shows a downside to frequentist estimation, where an unknown quantity has to be treated differently depending on whether it's a "parameter" or a "prediction".
 
 
+# Chapter 5
+
+## 5.1 Exchangeability with known parameters
+
+For each of the following three examples, give answer: (i) Are observations $y_1$ and $y_2$ exchangeable? (ii) Are observations $y_1$ and $y_2$ independent? (iii) Can we act as if the observations are independent?
+
+### (a)
+
+A box has one black ball and one white ball. We pick a ball $y_1$ at random, put it back, and pick another ball $y_2$ at random.
+
+The observations are independent and therefore exchangeable. Picking one color for $y_1$ does not influence the likelihood of picking another color for $y_2$, and the order in which we pick the balls does not matter. We can happily acts as if the observations are independent, since they are.
+
+### (b)
+
+A box has one black ball and one white ball. We pick a ball $y_1$ at random, we do not put it back, and pick another ball $y_2$.
+
+In this case, the observations are not independent, but they are still exchangeable. We can either pick the white ball first and then the black, or the black ball first and then the white. Both sequences have the same joint probability (1/2), so they are exchangeable. We cannot act as if the observations are independent, since the likelihood of $y_2$ is conditional on (entirely determined by) $y_1$.
+
+### (c)
+
+A box has one million black balls and one million white ball. We pick a ball $y_1$ at random, we do not put it back, and pick another ball $y_2$.
+
+In this case, the observations are again not independent (technically) but are exchangeable. If we pick e.g. white ball as $y_1$, this infinitessimally decreases our likelihood of picking a white ball again for $y_2$ (and so the observations aren't independent). However, if we draw two white balls, two black balls, or a black ball and a white ball, the order in which we do so does not affect the joint probability (so the observations are exchangeable). It is justifiable to treat the observations as independent since there are so many balls to sample from so that
+
+## 5.3 Hierarchical model and multiple comparisons
+
+### (a)
+
+Reproduce the computations in Section 5.5 for the educational testing example. Use posterior simulations to estimate: (i) for each school $j$, the probability that its coaching program is best of the eight; and (ii) for each pair of school, $j$ and $k$, the probability that the program in school $j$ is better than in school $k$
+
+```{r}
+
+school <- LETTERS[1:8]
+treatment_effect <- c(28, 8, -3, 7, -1, 1, 18, 12)
+std_error <- c(15, 10, 16, 11, 9, 11, 10, 18)
+
+pooled_mean <- sum(treatment_effect / std_error^2) / sum(1 / std_error^2)
+pooled_var <- 1 / sum(1 / std_error^2)
+
+# p(tau | y)
+p_tau_given_y <- function(tau) {
+
+  prec <- sum(1 / (std_error^2 + tau^2))
+  mu_hat <- (sum(treatment_effect / (std_error^2 + tau^2)) / sum(1 / (std_error^2 + tau^2)))
+  
+  (1 / sqrt(prec)) * prod((std_error^2 + tau^2)^(-1/2) * 
+                           exp(- (treatment_effect - mu_hat)^2 / (2 * (std_error^2 + tau^2))))
+
+}
+
+tau <- seq(0.01, 40, 0.01)
+
+plot(tau, sapply(tau, p_tau_given_y), type = 'l', 
+     lwd = 2, col = 'steelblue', 
+     xlab = expression(tau), ylab = 'Density', axes = FALSE)
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+tau_prob <- sapply(tau, p_tau_given_y)
+tau_prob <- tau_prob / sum(tau_prob)  
+tau_cdf <- cumsum(tau_prob)
+
+# Inverse cdf sampling method
+rtau <- function(n = 1) {
+  ps <- runif(n)
+  tau[sapply(ps, function(x) min(which(tau_cdf > x)))]
+}
+
+mu_hat <- function(tau) sum(treatment_effect / sum(std_error^2 + tau^2) / 
+                             sum(1 / (std_error^2 + tau^2)))
+mu_prec <- function(tau) sum(1 / (std_error^2 + tau^2))
+theta_hat <- function(mu, tau, i) (treatment_effect[i] / std_error[i]^2 + mu / tau^2) / 
+  (1 / std_error[i]^2 + 1 / tau^2)
+
+tau_samples <- rtau(1e4)
+
+mu_hat <- sapply(tau, function(x) {
+  sum(treatment_effect / (std_error^2 + x^2)) / sum(1 / (std_error^2 + x^2))
+})
+mu_prec <- sapply(tau, function(x){
+  sum(1 / (std_error^2 + x^2))
+})
+
+mu_samples <- rnorm(1e4, mu_hat, 1 / sqrt(mu_prec))
+
+theta_hat <- matrix(0, nrow = 1e4, ncol = 8)
+theta_prec <- matrix(0, nrow = 1e4, ncol = 8)
+theta_samples <- matrix(0, nrow = 1e4, ncol = 8)
+
+for (i in 1:1e4) {
+  for (j in 1:8) {
+    
+    theta_hat <- (treatment_effect[j] / std_error[j]^2 + mu_samples[i] / tau_samples[i]^2) / 
+      (1 / std_error[j]^2 + 1 / tau_samples[i]^2)
+    theta_prec <- 1 / std_error[j]^2 + 1 / tau_samples[i]^2
+    
+    theta_samples[i, j] <- rnorm(1, theta_hat, sqrt(1 / theta_prec))
+    
+  }
+}
+
+# Posterior means
+colMeans(theta_samples)
+
+# Standard deviations of the posterior means
+apply(theta_samples, 2, sd)
+
+pr_best <- table(apply(theta_samples, 1, which.max))
+pr_best <- pr_best / sum(pr_best)
+names(pr_best) <- school
+
+pr_better_than <- matrix(0, nrow = 8, ncol = 8)
+
+for (i in 1:8) {
+  for (j in 1:8) {
+    pr_better_than[i, j] <- mean(theta_samples[, i] > theta_samples[, j])
+  }
+}
+
+colnames(pr_better_than) <- school; rownames(pr_better_than) <- school 
+
+pr_best
+
+round(pr_better_than, 2)
+
+```
+
+The probabilities I got were very similar to those in the worked out solution, although sometimes slightly different. This is probably due to Monte Carlo error (Gelman et al. used only 1,000 posterior samples, I used 10,000).
+
+### (b)
+
+Repeat the same but for simple model with $\tau$ set to infinity.
+
+If $\tau$ is $\infty$, the eight schools are independent, and so their respective posterior distributions are $\theta_j \sim \text{Normal}(y_j, \sigma_j^2)$. Then:
+
+$$P(\theta_i > \theta_j \lvert y) = P(\theta_i - \theta_j > 0 \lvert y) = P(\zeta > 0 \lvert y)$$
+
+where $\zeta$ is a normal variable with mean $E(\zeta) = E(\theta_i) - E(\theta_j)$ and variance $Var(\zeta) = Var(\theta_i) + Var(\theta_j) - Cov(\theta_i, \theta_j) = \sigma_i^2 + \sigma_j^2 - 0$. The probability will therefore be:
+
+$$P(\theta_i > \theta_j) = \Phi \Bigg( \frac{y_i - y_j}{\sqrt{\sigma_i^2 + \sigma_j^2}} \Bigg)$$
+
+To estimate the probability of being the best, I simulated 10,000 draws from the independent distributions:
+
+```{r}
+
+sims2 <- sapply(1:8, function(x) rnorm(1e4, mean = treatment_effect[x], sd = std_error[x]))
+pr_best2 <- table(apply(sims2, 1, which.max))
+pr_best2 <- pr_best2 / sum(pr_best2)  
+names(pr_best2) <- school
+
+pr_better_than2 <- matrix(0, nrow = 8, ncol = 8)
+
+for (i in 1:8) {
+  for (j in 1:8) {
+    pr_better_than2[i, j] <- pnorm((treatment_effect[i] - treatment_effect[j]) / 
+            sqrt(std_error[i]^2 + std_error[j]^2))
+  }
+}
+
+colnames(pr_better_than2) <- school; rownames(pr_better_than2) <- school 
+
+pr_best2
+round(pr_better_than2, 2)
+
+```
+
+### (c)
+
+Discuss how **(a)** and **(b)** differ.
+
+The independent model in **(b)** places more confidence in the observed data & results in more extreme probabilities. For example, the probability of school A being the best and being higher than other schools is a lot higher than in **(a)**. This is most likely not a desirable behavior, since it is less conservative.  
+
+### (d)
+
+If $\tau = 0$, all the schools are the same, so we can't make any comparisons between them.
+
+## 5.4 Exchangeable prior distributions
+
+Suppose it is known a prior that $2J$ parameters $\theta_1, \theta_2, \ldots \theta_{2J}$ are clustered into two groups, with one half exactly being drawn from $\text{Normal}(1, 1)$ and the other from $\text{Normal}(-1, 1)$, but we do not know which distribution each parameter comes from.
+
+### (a)
+
+Are $\theta_1, \theta_2, \ldots \theta_{2J}$ exchangeable under this prior distribution?
+
+Yes, since the order in which the $\theta$'s would be sampled was not specified and so all permutations are possible
+
+### (b)
+
+Show that this distribution cannot be written as a mixture of independent and identically distributed components.
+
+If the density could be written as a mixture of i.i.d. components, we could express it as:
+
+$$p(\theta) = \int \prod_{j=1}^J p(\theta_j \lvert \phi) p(\phi) d \phi$$
+That would require the mixing component $p(\phi)$ to be independent as well (i.e. not depend on other $\theta$'s). However, since we know that exactly one half of observations come from one distribution & one half from the other, the mixing isn't independent - if, for example, we sample the first 8 $\theta$'s from $\text{Normal}(1, 1)$, then we know that $\theta_9$ will come from $\text{Normal}(-1, 1)$, with probability 1. As such, there is a negative correlation between any pair of $\theta$'s, $\theta_i$ and $\theta_j$: if $\theta_i$ is greater than zero, then it is more likely it comes from $\text{Normal}(1, 1)$ distribution, and in turn it is then more likely than $\theta_j$ comes from $\text{Normal}(-1, 1)$ distribution, and vice versa.
+
+### (c)
+
+Why can't we not simply take the limit as $J \to \infty$ and get a counterexample to de Finetti's theorem?
+
+As $J \to \infty$, the negative correlation between any pair of $\theta$'s goes to 0, and so the joint distribution approaches i.i.d. 
+
+## 5.5 Mixture of independent distributions
+
+Suppose distribution of $\pmb{\theta} = (\theta_1, \theta_2, \ldots, \theta_J)$ can be written as a mixture of independent and identically distributed components:
+
+$$p(\theta) = \int \prod_{j=1}^J p(\theta_j \lvert \phi) p(\phi) d \phi$$
+
+Prove that covariances $Cov(\theta_j, \theta_j)$ are all non-negative. 
+
+Let $\mu(\phi) = E(\theta_i \lvert \phi)$ be the expectation of ith $\theta$ when we know the probability of it coming from one or the other component. Then:
+
+$$Cov(\theta_i, \theta_j) = E(Cov(\theta_i, \theta_j \lvert \phi)) + Cov(E(\theta_i \lvert \phi), E( \theta_j \lvert \phi))$$
+$$= 0 + Cov(\mu(\phi), \mu(\phi))$$
+$$= Var(\mu(\phi)) > 0$$
+## 5.6 Exchangeable models
+
+### (a)
+
+In the divorce rate example of Section 5.2, set up a prior for the values $y_1, y_2, \ldots y_8$ that allows for one low value (Utah) and one high value (Nevada), with independent and identically distributed distributions for the other six values. The prior distribution should be exchangeable, since it is not known which of the 8 states correspond to Utah or Nevada:
+
+$$p(\pmb{\theta}) = \bigg[ 2{8 \choose 2} \bigg]^{-1} \sum_{\text{Permutation}} \text{Normal}(\theta_1 \lvert \mu_1, \sigma^2_1) \cdot \text{Normal}(\theta_2 \lvert \mu_2,  \sigma^2_2) \cdot \prod_{i=1}^6 \text{Normal}(\theta_i \lvert \mu_3, \sigma^2_3)$$
+
+The prior is a mixture of three Normal distributions, each with different mean and variance. Additionally, since we don't know which of the observations belong to Utah or Nevada, we need to average across all the possible permutations of these twos state within the list of all eight states.
+
+Since I don't know much about divorce rates in the US, I set the parameters $\mu_1$, $\mu_2$ and $\mu_3$ to 1, 6.5, and 12 respectively, and the same variances 2.5. 
+
+
+```{r}
+
+theta_obs <- c(5.8, 6.6, 7.8, 5.6, 7.0, 7.1, 5.4)
+
+mu <- c(1, 12, 6.5)
+sigma <- c(2.5, 2.5, 2.5)
+
+inds <- expand.grid(1:8, 1:8)
+inds <- inds[inds[, 1] != inds[, 2], ]
+
+pos <- matrix(3, nrow = 56, ncol = 8)
+
+for (i in 1:56) {
+  pos[i, inds[i, 1]] <- 1
+  pos[i, inds[i, 2]] <- 2
+}
+
+p_theta <- dnorm(rep(theta_obs, 56), mu[pos[, -8]], sigma[t(pos[, -8])], log = TRUE)
+p_theta <- matrix(p_theta, ncol = 7, byrow = TRUE)
+p_theta <- sum(exp(rowSums(p_theta))) / 56
+
+theta <- seq(0, 15, 0.01)
+theta_mat <- matrix(rep(theta_obs, length(theta)), ncol = 7, byrow = TRUE)
+theta_mat <- cbind(theta_mat, theta)
+
+p_theta8 <- apply(theta_mat, 1, function(x) {
+  p <- dnorm(rep(x, 56), mu[t(pos)], sigma[t(pos)], log = TRUE)
+  p <- matrix(p, ncol = 8, byrow = TRUE)
+  
+  sum(exp(rowSums(p)))
+  sum(exp(rowSums(p))) / 56
+  
+  sum(exp(rowSums(p))) / 56
+
+})
+
+p_theta8 <- p_theta8 / p_theta
+p_theta8 <- p_theta8 / sum(p_theta8)
+
+plot(theta, p_theta8, type = 'l', col = 'steelblue', lwd = 2,
+     xlab = expression(theta[8]), ylab = 'Density', axes = FALSE)
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+### (c)
+
+Now consider the eight data point $y_8 = 13.9$. Are these data consisent with the prior distribution you gave in part **(b)**? In particular, did your prior allow for the possibility that the actual data have an outlier at a high end, but no outlier at the low end?
+
+```{r}
+
+sum(p_theta8[theta >= 13.9])
+
+(1 - sum(p_theta8[theta < 3]))^8
+
+```
+
+The prior did seem to allow for an outlier on the high end (with 4.9% probability for the observed divorce rate for Nevada), and also not observing any outlier on the low end (with probability of not observing any observation less than 3 being about 14.2%). One way to improve the prior might be to make sure that the probability density goes to zero near zero, which it currently doesn't as a mix of normals. 
+
+## 5.7 Continuous mixture models
+
+### (a)
+
+If $y \sim \text{Poisson}(\theta)$ and $\theta \sim \text{Poisson}(\alpha, \beta)$, then the marginal (prior predictive) distribution of $y$ is a negative binomial with parameters $\alpha$ and $\beta$ (or $p = \beta/(1 + \beta)$). Find the mean and variance of the negative binomial:
+
+$$E(y) = E[E( y \lvert \theta)] = E(\theta) = \frac{\alpha}{\beta}$$
+$$Var(y) = E[Var(y \lvert \theta)] + Var[E(y \lvert \theta)] = E(\theta) + Var(\theta) = \frac{\alpha}{\beta} + \frac{\alpha}{\beta^2} + \frac{\alpha(\beta + 1)}{\beta^2}$$
+
+### (b)
+
+In the normal model with unknown location and scale $(\mu, \sigma^2)$, the non-informative prior density, $p(\mu, \sigma^2) \propto 1 / \sigma^2$, results in a normal-inverse-$\chi^2$ posterior distribution for $(\mu, \sigma^2)$. Marginally then, $\sqrt{n}(\mu - \bar y)/s$ has a $t_{n-1}$ posterior distribution. Derive mean and variance of this distribution, stating the appropriate condition on $n$ for existence of both moments:
+
+$$E(\sqrt{n}(\mu - \bar y)/s \lvert y) = E \bigg[\frac{\sqrt{n}}{s} E(\mu - \bar y \lvert \sigma, y) \bigg \lvert y \bigg] = E \bigg[ \frac{\sqrt{n}}{s} \cdot 0 \bigg\lvert y \bigg] = 0$$
+$$Var(\sqrt{n}(\mu - \bar y)/s \lvert y) = E[Var(\sqrt{n}(\mu - \bar y)/s \lvert \sigma, y) \lvert y] + Var[E(\sqrt{n}(\mu - \bar y)/s \lvert \sigma, y) \lvert y]$$
+$$= E \bigg[\frac{n}{s^2} Var(\mu \lvert \sigma, y) \bigg\lvert y \bigg]$$
+$$= E \bigg[ \frac{n}{s^2} \cdot \frac{\sigma^2}{n}  \bigg\lvert y \bigg]$$
+$$= E(\sigma^2 \lvert y)/s^2 = \frac{(n-1)s^2}{(n-3)}/s^2 \qquad \text{(by properties of scaled inverse-} \chi^2)$$
+$$= \frac{n-1}{n-3}$$
+Clearly, we must have $n > 3$ for the variance to be defined. 
+
+## 5.8 Discrete mixture models
+
+Let $p_m(\theta)$ for $m = 1, 2, \ldots, M$ be a set of conjugate prior densities for the sampling model $y \lvert \theta$. Show that the class of finite mixture prior densities:
+
+$$p(\theta) = \sum_{m=1}^M \lambda_m p_m(\theta)$$
+
+where $\lambda_m$'s are weights that sum to 1, is also conjugate class. Use mixture form to create a bimodal prior density for normal mean that is thought to be near with, with standard deviation 0.5, but also has a small probability of being near -1, with the same standard deviation. If the variance of observations $y_1, y_2, \ldots y_10$ are known to be 1, and their observed mean is $\bar y = -0.25$, derive posterior distribution for the mean, making a sketch of both prior and posterior densities. 
+
+Since each prior component of the prior mixture density $p(\theta) = \sum_{m=1}^M \lambda_m p_m(\theta)$ integrates to one, and the $\lambda_m$'s add up to one, the prior mixture density will add up to one as well. Additionally, since each prior component has a form that is conjugate to the likelihood, the mixture prior will be conjugate as well.
+
+```{r}
+
+mu <- seq(-3, 3, 0.01)
+
+prior1 <- dnorm(mu, 1, 0.5)
+prior2 <- dnorm(mu, -1, 0.5)
+
+prior <- 0.9 * prior1 + 0.1 * prior2
+
+plot(mu, prior, type = 'l', col = 'steelblue', lwd = 2,
+     xlab = expression(mu), ylab = 'Density', axes = FALSE)
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+mean1 <- ( (10 * -0.25) / 1 + 1 / 0.5^2) / (10 / 1 + 1 / 0.5^2)
+var1 <- 1 / (10/1 + 1 / 0.5^2)
+
+mean2 <- ( (10 * -0.25) / 1 + -1 / 0.5^2) / (10 / 1 + 1 / 0.5^2)
+var2 <- 1 / (10/1 + 1 / 0.5^2) 
+
+post1 <- dnorm(mu, mean1, sqrt(var1))
+post2 <- dnorm(mu, mean2, sqrt(var2))
+
+marg <- dnorm(-0.25, c(1,-1), sqrt(0.5^2 + 1/10))
+post_wt <- c(0.9, 0.1) * marg / sum(c(0.9, 0.1) * marg)
+
+post <- post_wt[1] * post1 + post_wt[2] * post2
+  
+plot(mu, post, type = 'l', col = 'steelblue', lwd = 2,
+     xlab = expression(mu), ylab = 'Density', axes = FALSE)
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+```{r}
+
+# Alternative way of computing, without relying on conjugacy
+mu <- seq(-3, 3, 0.01)
+
+prior1 <- dnorm(mu, 1, 0.5)
+prior2 <- dnorm(mu, -1, 0.5)
+
+lik <- dnorm(mu, -0.25, sqrt(1/10))
+
+unnorm_post1 <- prior1 * lik
+unnorm_post2 <- prior2 * lik
+
+post_wt <- c(sum(0.9 * unnorm_post1), sum(0.1 * unnorm_post2)) / 
+  sum(0.9 * unnorm_post1 + 0.1 * unnorm_post2)
+post <- post_wt[1] * unnorm_post1 / sum(unnorm_post1) + 
+  post_wt[2] * unnorm_post2 / sum(unnorm_post2)
+
+plot(mu, post, type = 'l', col = 'steelblue', lwd = 2,
+     xlab = expression(mu), ylab = 'Density', axes = FALSE)
+axis(1, tick = FALSE)
+box(bty = 'L', col = 'grey60')
+
+```
+
+## 5.9 Non-informative hyperprior distributions
+
+### (a)
+
+Show that, with uniform prior density on $(log(\alpha / \beta), log(\alpha + \beta))$, the unnormalized posterior density has an infinite integral.
+
+### (b)
+
+Show that combining a uniform prior distribution on $(\alpha + \beta)^{-\frac{1}{2}}$ and an independent uniform prior distribution on $\frac{\alpha}{\alpha + \beta}$ yields prior density $\propto (\alpha + \beta)^{-\frac{5}{2}}$
+
+
+The determinant of the Jacobian is:
+
+$$D = \begin{vmatrix} \frac{\beta}{\alpha + \beta} & -\frac{\alpha}{\alpha + \beta} \\ -\frac{1}{2}(\alpha + \beta)^{\frac{3}{2}} & -\frac{1}{2}(\alpha + \beta)^{\frac{3}{2}} \end{vmatrix} = -\frac{\beta}{2(\alpha + \beta)^{\frac{7}{2}}} - \frac{\alpha}{2(\alpha + \beta)^{\frac{7}{2}}} = -\frac{(\alpha + \beta)}{2(\alpha + \beta)^{\frac{7}{2}}} \propto (\alpha + \beta)^{-\frac{5}{2}}$$
+
+### (c)
+
+Show that the resulting posterior distribution is proper as long as $0 < y_j < n_j$ for at least one experiment $j$.
+
+## 5.10 Checking integrability of posterior
+
+Consider hierarchical normal model in section 5.4. Show that:
+
+### (a)
+
+If the hyperprior distribution is $p(\mu, \tau) \propto \tau^{-1}$, show that the posterior density is improper.
+
+The posterior density is:
+
+$$p(\tau \lvert y) \propto p(\tau) V^{1/2}_\mu \prod_{j=1}^J (\sigma^2_j + \tau^2)^{-1/2} \exp \bigg(-\frac{(\bar y_j - \hat \mu)^2}{2(\sigma^2_j + \tau^2)} \bigg)$$
+where $V_\mu^{-1} = \sum_{j=1}^J \frac{1}{\sigma_j^2 + \tau^2}$
+
+As $\tau \to 0$, everything apart from $p(\tau)$ converges to a constant. However, if $p(\tau) \propto \tau^{-1}$, then $p(\tau) \to 0$ as $\tau \to 0$, i.e. the integrand is not finite & the resulting posterior is improper. 
+
+### (b)
+
+If the hyperprior distribution is $p(\mu, \tau) \propto 1$, show that the posterior density is proper if $J > 2$.
+
+The exponent term of the posterior will be smalle then or equal to one. We can rewrite the rest as:
+
+$$p(\tau \lvert y)^* \propto p(\tau) V^{1/2}_\mu \prod_{j=1}^J (\sigma^2_j + \tau^2)^{-1/2}$$
+$$\propto 1 \cdot \frac{1}{\sqrt{\sum_{j=1}^J \frac{1}{\sigma_j^2 + \tau^2}}} \cdot \prod_{j=1}^J (\sigma_j^2 + \tau^2)^{-1/2}$$
+As $\tau \to \infty$ (or $\tau \to \text{big}$), the contribution of the observation variances $\sigma_j^2$ will drop out. So we can rewrite it as:
+
+$$\propto \bigg(\sum_{j = 1}^J \frac{1}{\tau^2} \bigg)^{-1/2} \cdot (\tau^2)^{-J/2}$$
+$$= \bigg(\frac{J}{\tau^2} \bigg)^{-1/2} \cdot (\tau^2)^{-J/2}$$
+$$= \frac{\tau}{\sqrt{J}} \cdot \frac{1}{\tau^{J}} = \frac{1}{\sqrt{J} \tau^{J - 1}}$$
+
+In the limit as $\tau \to \infty$, if $J = 1$, the fraction above will be a constant: $p(\tau \lvert y) \propto \frac{1}{\sqrt{J}}$, and so the integral won't be finite. However, for $J > 2$, the integrand will be a decreasing function of $J$ and so the integral will be finite. 
+
+(not sure if it shouldn't be $J > 3$, but $J > 2$ is what the book says)
+
+### (c)
+
+How would you analyze SAT coaching data if $J = 2$ (that is, if there were only 2 schools)?
+
+If there are only two schools, it doesn't seem reasonable to analyze the data as a hierarchical model anymore. The easiest thing to do would be just to do comparison of normal means with known variances.
+
+## 5.11 Non-conjugate hierarchical models
+
+Suppose in the rat tumor example, we want to use a normal population distribution on the log odds scale: $\text{logit}{(\theta_j)} \sim \text{Normal}(\mu, \tau^2)$ for $j = 1, 2, \ldots, J$.
+
+### (a)
+
+Write the joint posterior density $p(\pmb{\theta}, \mu, \tau \lvert y)$:
+
+$$p(\pmb{\theta}, \mu, \tau \lvert y) \propto p(\mu, \tau) \cdot p(\theta \lvert \mu, \tau) \cdot p(y \lvert \theta)$$
+Now, $p(\theta \lvert \mu, \tau)$ is parametrized in logit units, so we need to find the Jacobian of the transformation:
+
+$$\eta = \log \bigg( \frac{\theta}{1 - \theta} \bigg)$$
+$$\frac{\partial \eta}{\partial \theta} = \frac{1 - \theta}{\theta} \cdot \frac{1 - \theta - (- \theta)}{(1 - \theta)^2} = \frac{1 - \theta}{\theta} \cdot \frac{1}{(1 - \theta^2)} = \frac{1}{\theta(1 - \theta)}$$
+
+Thus:
+
+$$p(\pmb{\theta}, \mu, \tau \lvert y) \propto p(\mu, \tau) \cdot \prod_{j=1}^J \bigg[ \frac{1}{\theta_j (1 - \theta_j)} \cdot \frac{1}{\tau} \cdot \exp \bigg( - \frac{(\theta_j - \mu)^2}{2 \tau^2} \bigg) \bigg] \cdot \prod_{j=1}^J \theta_j^{y_j} (1 - \theta_j)^{n_j - y_j}$$
+### (b)
+
+Show that the integral $p(\phi \lvert y) = \int p(\theta, \phi \lvert y) d\theta$ (i.e. the marginal posterior of the hyperparameters) has no closed-form expression.
+
+There is no straightforward way to evaluate the integral of the two products in the posterior across the multiple $\theta_j$'s. We could evaluate integrals for each of the individual $\theta_j$'s, but we can't do it jointly.  
+
+### (c)
+
+Why is the expression $p(\phi \lvert y) = \frac{p(\theta, \phi \lvert y)}{p(\theta \lvert \phi, y)}$ no help in this problem?
+
+In order for that expression to be useful, we would have to know $p(\theta \lvert \mu, \tau, y)$, which we don't since the prior and the likelihood aren't conjugate.
+
+## 5.12 Conditional posterior means and variances
+
+Derive analytics expression for $E(\theta _j \lvert \tau, y)$ and $Var(\theta_j \lvert \tau, y)$.
+
+$$E(\theta_j \lvert \mu, \tau, y_j) = E(E(\theta_j \lvert \mu, \tau, y_j)) = E \Bigg[ \frac{\frac{y_j}{\sigma_j^2} + \frac{\mu}{\tau^2}}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} \Bigg \lvert \tau, y \Bigg] = \frac{\frac{y_j}{\sigma_j^2} + \frac{\hat \mu}{\tau^2}}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} $$
+$$Var(\theta_j \lvert \mu, \tau, y_j) = E(Var(\theta_j \lvert \mu, \tau, y_j)) + Var(E(\theta_j \lvert \mu, \tau, y_j))$$
+$$E \Bigg[ \frac{1}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} \Bigg \lvert \tau, y \Bigg] + Var \Bigg[ \frac{\frac{y_j}{\sigma_j^2} + \frac{\mu}{\tau^2}}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} \Bigg \lvert \tau, y \Bigg]$$
+$$= \frac{1}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} + \Bigg( \frac{\frac{1}{\tau^2}}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} \Bigg)^2 \cdot V_\mu$$
+
+where:
+
+$$\hat \mu = \frac{\sum_{j = 1}^J \frac{1}{\sigma_j^2 + \tau^2} \bar y_{\cdot j}}{\sum_{j=1}^J \frac{1}{\sigma_j^2 + \tau^2}} \qquad V_\mu^{-1} = \sum_{j=1}^J \frac{1}{\sigma^2_j + \tau^2}$$
+
+## 5.13 Hierarchical Binomial model
+
+The bicycle lane data from chapter 3:
+
+### (a)
+
+Set up a model for the data such that, for $j = 1, 2, \ldots, 10$, the observed number of bicycles at location $j$ is binomial with unknown probability $\theta_j$ and sample size equal to the total number of vehicles. Assign Beta population distribution for hte parameters $\theta_j$, and non-informative prior distribution. Write down the joint posterior distribution.
+
+$$p(\log(\alpha / \beta), \log(\alpha + \beta)) \propto \alpha \beta (\alpha + \beta)^{-5/2}$$
+$$p(\theta, \alpha, \beta \lvert y) = p(\alpha, \beta) p(\theta \lvert \alpha, \beta) p(y \lvert \theta)$$
+$$ \propto p(\alpha, \beta) \prod_{j=1}^J \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta_j^{\alpha - 1} (1 - \theta_j)^{\beta - 1} \prod_{j=1}^J \theta_j^{y_j} (1 - \theta_j)^{n_j - y_j}$$
+$$p(\theta \lvert \alpha, \beta, y) = \prod_{j=1}^J \frac{\Gamma(\alpha + \beta + n_j)}{\Gamma(\alpha + y_) \Gamma(\beta + n_j - y_j)} \theta_j^{\alpha + y_j - 1} (1 - \theta_j)^{\beta + n_j - y_j - 1}$$
+$$p(\alpha, \beta \lvert y) \propto p(\alpha, \beta) \prod_{j=1}^J \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \cdot \frac{\Gamma(\alpha + y_j) \Gamma(\beta + n_j - y_j)}{\Gamma(\alpha + \beta + n_j)}$$
+### (b)
+
+Compute the marginal posterior density of the hyperparameters and draw simulations from the joint posterior distribution of the parameters and hyperparameters:
+
+```{r}
+
+w_lanes_bic <- c(16, 9, 10, 13, 19, 20, 18, 17, 35, 55)
+w_lanes_all <- c(58, 90, 48, 57, 103, 57, 86, 112, 273, 64)
+
+y <- w_lanes_bic
+n <- w_lanes_bic + w_lanes_all
+
+s <- seq(-2.2, 0, length = 100)
+t <- seq(0, 4.5, length = 100)
+
+to_beta <- function(x, y) exp(y) / (exp(x) + 1)
+to_alpha <- function(x, y) exp(x) * to_beta(x, y)
+
+a <- outer(s, t, to_alpha)
+b <- outer(s, t, to_beta)
+
+log_prior <- -5/2 * log(a + b)
+log_jacob <- log(a) + log(b)
+log_lik <- matrix(nrow = length(s), ncol = length(t))
+
+for (i in seq_along(s)) {
+  for (j in seq_along(t)) {
+    
+    aa <- a[i, j]; bb <- b[i, j]
+    log_lik[i, j] <- sum(lgamma(aa + bb) - lgamma(aa) - lgamma(bb) +
+                           lgamma(aa + y) + lgamma(bb + n - y) - 
+                           lgamma(aa + bb + n))
+  }
+}
+
+log_post <- log_prior + log_jacob + log_lik
+log_post <- log_post - max(log_post)
+
+post <- exp(log_post)
+post <- post / sum(post)
+
+contour(s, t, post, col = 'steelblue',
+        drawlabels = FALSE, xlab = expression(log(alpha / beta)), 
+        ylab = expression(log(alpha + beta)), axes = FALSE)
+draw_axes()
+
+post_s <- rowSums(post)
+post_s <- post_s / sum(post_s)
+s_inds <- sample(seq_along(s), 1e3, prob = post_s, replace = TRUE)
+
+s_samples <- s[s_inds]
+t_samples <- numeric(1e3)
+
+for (i in seq_along(s_samples)) {
+  
+  cond <- post[s_inds[i], ]
+  cond <- cond / sum(cond)
+  t_samples[i] <- sample(t, 1, prob = cond)
+
+}
+
+plot(s_samples, t_samples, pch = 19, col = colt('seagreen', 0.1),
+     axes = FALSE, xlab = expression(log(alpha / beta)[samples]),
+     ylab = expression(log(alpha + beta)[samples]),
+     xlim = c(-2.2, 0), ylim = c(0, 4.5))
+contour(s, t, post, col = 'steelblue',
+        drawlabels = FALSE, add = TRUE)
+draw_axes()
+
+a_samples <- to_alpha(s_samples, t_samples)
+b_samples <- to_beta(s_samples, t_samples)
+
+theta_samples <- matrix(0, ncol = length(y), nrow = 1e3)
+
+par(mfrow = c(5, 2), mar = c(2.5, 2.5, 1.5, 1.5))
+
+for (j in seq_along(y)) {
+  
+  theta_samples[, j] <- rbeta(1e3, a_samples + y[j], b_samples + n[j] - y[j])
+
+  hist(theta_samples[, j], axes = FALSE, main = bquote(theta[.(j)]),
+     col = 'steelblue', border = 'white', xlim = c(0, 0.6), breaks = seq(0, 1, 0.025),
+     xlab = expression(tilde(theta)), ylab = 'Count')
+  points(y[j]/n[j], 0, col = 'firebrick', pch = 19)
+  draw_axes()
+
+}
+
+```
+
+### (c)
+
+Compare the posterior distribution of the parameters $\theta_j$ to the raw proportions $y_j / n_j$. How does the inference from the posterior distribution differ from the raw proportions?
+
+```{r}
+
+theta_quants <- apply(theta_samples, 2, quantile, c(0.025, 0.975))
+yhat <- y/n
+
+par(mar = c(5, 5, 2, 2), mfrow = c(1, 1))
+plot(seq(0, 0.6, 0.1), seq(0, 0.6, 0.1), type = 'l', col = 'grey60', axes = FALSE,
+     xlab = expression(hat(theta) == y/n), ylab = expression(hat(theta)[hierarchical]))
+segments(yhat, theta_quants[1, ], yhat, theta_quants[2, ], col = 'steelblue')
+points(yhat, colMeans(theta_samples), pch = 19, col = 'steelblue')
+draw_axes()
+
+```
+
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+
+# Try in Stan
+# NOT RUN
+library(cmdstanr)
+
+mod_string1 <- '
+  data {
+    int<lower=0> N;
+    int<lower=0> y[N];
+    int<lower=0> n[N];
+  }
+  
+  parameters {
+    real<lower=0> alpha;
+    real<lower=0> beta;
+    vector<lower=0, upper=1>[N] theta;
+  }
+  
+  transformed parameters {
+    real s;
+    real t;
+    
+    s = log(alpha / beta);
+    t = log(alpha + beta);
+  }
+  
+  model {
+   target += - 2.5 * log(alpha + beta);
+   theta ~ beta(alpha, beta);
+   y ~ binomial(n, theta);
+  }
+'
+
+dt1 <- list(N = length(y), y = y, n = n)
+mod1 <- cmdstan_model(write_stan_file(mod_string1))
+fit1 <- mod1$sample(dt1, adapt_delta = 0.9, iter_sampling = 500, refresh = 0)
+
+st_samples <- fit1$draws(variables = c('s', 't'), format = 'draws_matrix')
+
+plot(st_samples[, 1], st_samples[, 2], pch = 19, col = colt('seagreen', 0.1),
+     axes = FALSE, xlab = expression(log(alpha / beta)[samples]),
+     ylab = expression(log(alpha + beta)[samples]), 
+     xlim = c(-2.2, 0), ylim = c(0, 4.5))
+contour(s, t, post, col = 'steelblue',
+        drawlabels = FALSE, add = TRUE)
+draw_axes()
+
+```
+
+### (d)
+
+Give a 95% posterior interval for the average underlying proportion of traffic that is bicycles
+
+```{r}
+
+theta_marg_samples <- rbeta(1e3, a_samples, b_samples)
+
+hist(theta_marg_samples, axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white', xlim = c(0, 0.6), breaks = seq(0, 1, 0.05),
+     xlab = expression(theta), ylab = 'Count')
+draw_axes()
+
+quantile(theta_marg_samples, c(0.025, 0.975))
+  
+```
+
+### (e)
+
+A new city block is sampled at random and is a residential street with a bike route. In an hour of observation, 100 vehicles of all kinds go by. Give a 95% posterior interval for the number of those vehicles that are bicycles. 
+
+```{r}
+
+yrep_samples <- rbinom(1e3, 100, theta_marg_samples)
+
+hist(yrep_samples, axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(tilde(y)), ylab = 'Count')
+draw_axes()
+
+(yrep_quants <- quantile(yrep_samples, c(0.025, 0.5, 0.975)))
+
+```
+
+We would expect anywhere between `r ceiling(yrep_quants[1])` to `r ceiling(yrep_quants[2])`` bicycles. Comparing this with other values observed in the sample, that seems like a fairly reasonable (although conservative) estimate.
+
+### (f)
+
+Was the Beta distribution for the $\theta_j$'s reasonable?
+
+If our aim was to estimate the proportion of traffic that the bicycles made up then Beta distribution would seem like a reasonable prior for $\theta_j$'s.
+
+## 5.14 Hierarchical Poisson model
+
+Consider the same data as in the previous question, but suppose only the total amount of traffic at each location is observed.
+
+### (a)
+
+Set up a model in which the total number of vehicles observed at each location $j$ follows a Poisson distribution with parameter $\theta_j$, the "true" rate of traffic per hour at that location. Assign a Gamma population distribution for $\theta_j$'s and a non-informative hyperprior distribution. Write down the joint posterior distribution.
+
+I'll try using the same non-informative density as in the previous question.
+
+$$p(\alpha, \beta) \propto (\alpha + \beta)^{-\frac{5}{2}}$$
+$$p(\alpha, \beta, \theta \lvert y) = p(\alpha, \beta) \cdot p(\theta \lvert \alpha, \beta) \cdot p(y \lvert \theta)$$
+$$= p(\alpha, \beta) \cdot \prod_{j= 1}^J \frac{\beta^\alpha}{\Gamma(\alpha)} \theta_j^{\alpha - 1} e^{- \beta \theta_j} \cdot \prod_{j=1}^J \frac{\theta_j^{y_j} e^{-\theta_j}}{y_j!}$$
+$$= p(\alpha, \beta) \cdot \prod_{j = 1}^J \frac{\beta^\alpha}{\Gamma(\alpha)} \cdot \frac{1}{y_j!} \cdot \theta_j^{\alpha + y_j - 1} e^{-(\beta + 1) \theta_j}$$
+
+$$p(\theta \lvert \alpha, \beta, y) = \prod_{j=1}^J \frac{(\beta + 1)^{\alpha + u_j}}{\Gamma(\alpha + y_j)} \theta_j^{\alpha + y_j - 1} e^{-(\beta + 1) \theta_j}$$
+$$p(\alpha, \beta \lvert y) = \frac{p(\alpha, \beta, \theta \lvert y)}{p(\theta \lvert \alpha, \beta, y)}$$
+$$= p(\alpha, \beta) \cdot \prod_{j = 1}^J \frac{\beta^\alpha}{\Gamma(\alpha)} \cdot \frac{1}{y_j!} \cdot \frac{\Gamma(\alpha + y_j)}{(\beta + 1)^{\alpha + y_j - 1}}$$
+### (b)
+
+Compute the marginal posterior density of the hyperparameters and plots its contours. Simulate random draws from the posterior distribution of the hyperparameters and make a scatterplot of the simulation draws.
+
+Here, I can just recycle the code from the previous question:
+
+```{r}
+
+s <- seq(3.5, 6, length = 100)
+t <- seq(0, 3.5, length = 100)
+
+a <- outer(s, t, to_alpha)
+b <- outer(s, t, to_beta)
+
+log_lik <- matrix(nrow = length(s), ncol = length(t))
+
+for (i in seq_along(s)) {
+  for (j in seq_along(t)) {
+    
+    aa <- a[i, j]; bb <- b[i, j]
+    log_lik[i, j] <- sum(aa * log(bb) - lgamma(aa) - lfactorial(n) +
+                           lgamma(aa + n) - (aa + n) * log(bb + 1))
+  }
+}
+
+log_post <- log_prior + log_jacob + log_lik
+log_post <- log_post - max(log_post)
+
+post <- exp(log_post)
+post <- post / sum(post)
+
+contour(s, t, post, col = 'steelblue',
+        drawlabels = FALSE, xlab = expression(log(alpha / beta)), 
+        ylab = expression(log(alpha + beta)), axes = FALSE)
+draw_axes()
+
+post_s <- rowSums(post)
+post_s <- post_s / sum(post_s)
+s_inds <- sample(seq_along(s), 1e3, prob = post_s, replace = TRUE)
+
+s_samples <- s[s_inds]
+t_samples <- numeric(1e3)
+
+for (i in seq_along(s_samples)) {
+  
+  cond <- post[s_inds[i], ]
+  cond <- cond / sum(cond)
+  t_samples[i] <- sample(t, 1, prob = cond)
+  
+}
+
+plot(s_samples, t_samples, pch = 19, col = colt('seagreen', 0.1),
+     axes = FALSE, xlab = expression(log(alpha / beta)[samples]),
+     ylab = expression(log(alpha + beta)[samples]),
+     xlim = c(3.5, 6), ylim = c(0, 3.5))
+contour(s, t, post, col = 'steelblue',
+        drawlabels = FALSE, add = TRUE)
+draw_axes()
+
+```
+
+### (c)
+
+Is the posterior density integrable? Answer analytically by examining the joint posterior density at the limits or empirically by examining the plots of the marginal posterior density above.
+
+Looking at the plots, the posterior mode sits concentrated around the points (4.75, 1.5), and does not seem to stretch towards either zero or infinity, so it should be integrable. 
+
+### (d)
+
+Draw samples from the joint posterior distribution of the parameters and hyperparameters, by analogy to the method used in the hierarchical binomial model.
+
+Again, I can recycle previous code:
+
+```{r}
+
+a_samples <- to_alpha(s_samples, t_samples)
+b_samples <- to_beta(s_samples, t_samples)
+
+theta_samples <- matrix(0, ncol = length(y), nrow = 1e3)
+
+par(mfrow = c(5, 2), mar = c(2.5, 2.5, 1.5, 1.5))
+
+for (j in seq_along(y)) {
+  
+  theta_samples[, j] <- rgamma(1e3, a_samples + n[j], b_samples + 1)
+  
+  hist(theta_samples[, j], axes = FALSE, main = bquote(theta[.(j)]),
+       col = 'steelblue', border = 'white',
+       xlab = expression(tilde(theta)), ylab = 'Count')
+  points(n[j], 0, col = 'firebrick', pch = 19)
+  draw_axes()
+  
+}
+
+
+theta_quants <- apply(theta_samples, 2, quantile, c(0.025, 0.975))
+nhat <- n
+
+par(mar = c(5, 5, 2, 2), mfrow = c(1, 1))
+plot(seq(50, 320, 0.1), seq(50, 320, 0.1), type = 'l', col = 'grey60', axes = FALSE,
+     xlab = expression(hat(theta) == n), ylab = expression(hat(theta)[hierarchical]))
+segments(nhat, theta_quants[1, ], nhat, theta_quants[2, ], col = 'steelblue')
+points(nhat, colMeans(theta_samples), pch = 19, col = 'steelblue')
+draw_axes()
+
+```
+
+## 5.15 Meta-analysis
+
+Perform the computations for hte meta-analysis of data in Table 5.4
+
+### (a)
+
+Plot the posterior density of $\tau$ over an appropriate range that includes essentially all of the posterior density
+
+```{r}
+
+y_control <- c(3, 14, 11, 127, 27, 6, 152, 48, 37, 188,
+               52, 47, 16, 45, 31, 38, 12, 6, 3, 40, 43, 39)
+n_control <- c(39, 116, 93, 1520, 365, 52, 939, 471, 282,
+               1921, 583, 266, 293, 883, 147, 213, 122, 
+               154, 134, 218, 364,674)
+y_treat <- c(3, 7, 5, 102, 28, 4, 98, 60, 25, 138, 64,
+             45, 9, 57, 25, 33, 28, 8, 6, 32, 27, 22)
+n_treat <- c(38, 114, 69, 1533, 355, 59, 945, 632, 278,
+             1916, 873, 263, 291, 858, 154, 207, 251,
+             151, 174, 209, 391, 680)
+
+y_logit <- log(y_treat / (n_treat - y_treat)) - 
+  log(y_control / (n_control - y_control))
+sig2_logit <- 1 / y_treat + 1 / (n_treat - y_treat) + 
+  1 / y_control + 1 / (n_control - y_control)
+
+muhat <- function(tau) sum(y_logit / (sig2_logit + tau^2)) / sum(1 / (sig2_logit + tau^2))
+vmu <- function(tau) 1 / sum(1 / (sig2_logit + tau^2))
+  
+tau <- seq(0.001, 0.6, length = 200)
+
+lp_tau <- function(tau) {
+  
+  1/2 * log(vmu(tau)) + sum(-1/2 * log(sig2_logit + tau^2) - 
+                         (y_logit - muhat(tau))^2 / (2 * (sig2_logit + tau^2)))
+}
+
+log_post_tau <- sapply(tau, lp_tau)
+log_post_tau <- log_post_tau - max(log_post_tau)
+
+post_tau <- exp(log_post_tau)
+post_tau <- post_tau / sum(post_tau)
+
+plot(tau, exp(log_post_tau), type = 'l', col = 'steelblue', lwd = 2,
+     xlab = expression(tau), ylab = 'Density', axes = FALSE)
+draw_axes()
+
+```
+
+### (b)
+
+Produce graphs analogous to figures 5.6 and 5.7 to display how the posterior means and standard deviations of the $\theta_j$'s depend on $\tau$
+
+```{r}
+
+theta_hat <- function(mu, tau, j) (y_logit[j] / sig2_logit[j] + mu / tau^2) / 
+  (1 / sig2_logit[j] + 1 / tau^2)  
+theta_var <- function(tau, j) 1 / (1 / sig2_logit[j] + 1 / tau^2)
+
+theta_mean <- matrix(0, ncol = length(y_logit), nrow = length(tau))
+theta_sd <- theta_mean
+
+mu <- sapply(tau, muhat)
+
+for (j in seq_along(y_logit)) {
+  theta_mean[, j] <- theta_hat(mu, tau, j)
+  theta_sd[, j] <- sqrt(theta_var(tau, j))
+}
+
+plot(seq(0, 0.6, length = 100), seq(-0.6, 0.25, length = 100), type = 'n',
+     xlab = expression(tau), ylab = expression(hat(theta[j])), axes = FALSE)
+for (j in seq_along(y_logit)) lines(tau, theta_mean[, j], col = 'steelblue')
+draw_axes()
+
+plot(seq(0, 0.6, length = 100), seq(0, 0.6, length = 100), type = 'n',
+     xlab = expression(tau), ylab = expression(sd(theta[j])), axes = FALSE)
+for (j in seq_along(y_logit)) lines(tau, theta_sd[, j], col = 'steelblue')
+draw_axes()
+
+```
+
+### (c)
+
+Produce a scatterplot of the crude effect estimates vs. the posterior median effect estimates of the 22 studies. Verify that the studies with the smallest sample sizes are partial pooled most towards the mean.
+
+```{r}
+
+set.seed(123456)
+tau_samples <- sample(tau, 1e3, prob = post_tau, replace = TRUE)
+mu_samples <- rnorm(1e3, sapply(tau_samples, muhat), sqrt(sapply(tau_samples, vmu)))
+
+theta_samples <- matrix(0, ncol = length(y_logit), nrow = 1e3)
+
+for (j in seq_along(y_logit)) {
+  theta_samples[, j] <- rnorm(1e3, theta_hat(mu_samples, tau_samples, j), 
+                              sqrt(theta_var(tau_samples, j)))
+}
+
+theta_quants <- apply(theta_samples, 2, quantile, c(0.025, 0.975))
+
+plot(seq(-0.75, 0.25, 0.001), seq(-0.75, 0.25, 0.001), type = 'l', 
+     col = 'grey60', axes = FALSE, 
+     xlab = expression(logit(y)), ylab = expression(hat(theta)[hierarchical]))
+abline(h = median(mu_samples), lty = 'dashed', col = 'grey80')
+segments(y_logit, theta_quants[1, ], y_logit, theta_quants[2, ], col = 'steelblue')
+points(y_logit, apply(theta_samples, 2, median), pch = 19, 
+       cex = sqrt(n_treat + n_control)/50, col = 'firebrick')
+text(y_logit, theta_quants[2, ] + 0.05, labels = n_treat + n_control)
+draw_axes()
+
+```
+
+The smaller studies (small points) are typically closer ot the dashed grey line, which is the population median.
+
+### (d)
+
+Draw simulations from the posterior distribution of a new treatment effect $\tilde \theta_j$. Plot a histogram of the simulation.
+
+```{r}
+
+theta_tilde_samples <- rnorm(1e4, mu_samples, tau_samples)
+
+hist(theta_tilde_samples, axes = FALSE, main = NULL, breaks = 20,
+     col = 'steelblue', border = 'white',
+     xlab = expression(tilde(theta)), ylab = 'Count')
+draw_axes()
+
+mean(theta_tilde_samples > 0)
+
+```
+
+There is about 6.5% probability that the treatment is the same as or worse than the placebo.
+
+## 5.16 Equivalent data
+
+Suppose we wish to apply the inferences from the meta-analysis example in Section 5.6 to data on a new study with equal numbers of people in the control and treatment groups. How large would the study have to be so that the prior and data were weighted equally in the posterior inference for that study?
+
+Using the posterior expectation formula:
+
+$$\theta_j = \frac{\frac{\bar y_j}{\sigma^2_j} + \frac{\mu}{\tau^2}}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}}$$
+Clearly, we want $\frac{1}{\sigma_j^2} = \frac{1}{\tau^2}$
+
+Our posterior estimate for $\frac{1}{\tau^2}$ is:
+
+```{r}
+
+(tau_inv <- mean(1 / tau_samples))
+
+```
+
+Therefore, we want $\frac{1}{\sigma_j^2} =$ `r round(tau_inv, 3)`. Hence, using the information that the treatment and the control group should be the same size, we have:
+
+$$\frac{1}{y_1} + \frac{1}{n_1 - y_1} + \frac{1}{y_0} + \frac{1}{n_0 - y_0} = \frac{1}{24.77}$$
+$$\implies \frac{1}{y_1} + \frac{1}{n - y_1} + \frac{1}{y_0} + \frac{1}{n - y_0} = \frac{1}{24.77}$$
+I couldn't figure out how to convert the posterior for log-odds ratio to something which would give me $y_1$ and $y_0$ (or $p_1$ and $p_0$), so I instead decided to do a slightly hacky solution by first estimating $p_1$ and $p_0$ using two independent hierarchical models like in exercise 5.13 and then calculating the variance for simulated posterior predictive draws of $y_1$ and $y_0$ given $n$:
+
+```{r}
+
+a <- seq(0.01, 15, length = 100)
+b <- seq(10, 150, length = 100)
+
+y1 <- y_treat
+y0 <- y_control
+n1 <- n_treat
+n0 <- n_control
+
+log_post1 <- matrix(0, nrow = length(a), ncol = length(b))
+log_post0 <- log_post1
+
+for (i in seq_along(a)) {
+  for (j in seq_along(b)) {
+      
+    aa <- a[i]; bb <- b[j]
+    log_post1[i, j] <- sum(lgamma(aa + bb) - lgamma(aa) - lgamma(bb) +
+                           lgamma(aa + y1) + lgamma(bb + n1 - y1) - 
+                           lgamma(aa + bb + n1))
+    log_post0[i, j] <- sum(lgamma(aa + bb) - lgamma(aa) - lgamma(bb) +
+                           lgamma(aa + y0) + lgamma(bb + n0 - y0) - 
+                           lgamma(aa + bb + n0))
+  }
+}
+
+post1 <- exp(log_post1 - max(log_post1))
+post0 <- exp(log_post0 - max(log_post0))
+
+post_a1 <- rowSums(post1)
+post_a1 <- post_a1 / sum(post_a1)
+post_a0 <- rowSums(post0)
+post_a0 <- post_a0 / sum(post_a0)
+
+a1_inds <- sample(seq_along(a), 1e3, prob = post_a1, replace = TRUE)
+a0_inds <- sample(seq_along(a), 1e3, prob = post_a0, replace = TRUE)
+
+a1_samples <- a[a1_inds]
+a0_samples <- a[a0_inds]
+b1_samples <- numeric(1e3)
+b0_samples <- numeric(1e3)
+
+for (i in seq_along(a1_samples)) {
+  cond1 <- post1[a1_inds[i], ]
+  cond0 <- post0[a0_inds[i], ]
+  cond1 <- cond1 / sum(cond1)
+  cond0 <- cond0 / sum(cond0)
+  
+  b1_samples[i] <- sample(b, 1, prob = cond1)
+  b0_samples[i] <- sample(b, 1, prob = cond0)
+  
+}
+
+p1_samples <- rbeta(1e3, a1_samples, b1_samples)
+p0_samples <- rbeta(1e3, a0_samples, b0_samples)
+
+n <- seq(400, 800, 10)
+
+sig2_samples <- matrix(0, ncol = length(n), nrow = 1e3)
+
+for (j in seq_along(n)) {
+  
+  y1 <- rbinom(1e3, n[j], p1_samples)
+  y0 <- rbinom(1e3, n[j], p0_samples)
+  
+  sig2_samples[, j] <- pmin(1 / y1, 1) + 1 / (n[j] - y1) + pmin(1 / y0, 1) + 1 / (n[j] - y0) 
+  
+}
+
+plot(n, colMeans(sig2_samples), type = 'l', col = 'steelblue', ylab = expression(hat(sigma^2)),
+     axes = FALSE)
+abline(h = 1 / 24.77, col = 'firebrick', lty = 'dashed')
+draw_axes()
+
+(n_final <- n[min(which(colMeans(sig2_samples - 1/24.77) < 0))])
+
+```
+
+Thus, we should recruit about `r n_final`` participants.
+
+## 5.17 Informative prior distributions
+
+Consider a hypothetical sutdy of a simple training program for basketball free-throw shooting. A random sample of 100 college students is recruited into the study. Each student first takes 100 free-throws to establish a baseline success probability. Each student then takes 50 practice shots each day for a month. At the end of that timel he or she takes 100 shots for final measurement.
+
+Let $\theta_i$ be the improvement in success probability for person $i$. For simplicity, assume the $\theta_i$'s are normally distributed with mean $\mu$ and standard deviation $\sigma$. Give three joint priors for $\mu, \sigma$
+
+### (a)
+
+A non-informative prior distribution. 
+
+For this, we could use a distribution that is uniform on $\log(\sigma)$, i.e. $p(\mu, \sigma) \propto \frac{1}{\sigma}$.
+
+### (b)
+
+A subjective prior distribution based on your best knowledge. 
+
+I don't know much about basketball, but let's say that a simple realistic-ish hyperprior distribution could be bivariate normal centered on $\begin{bmatrix} \mu \\ \sigma \end{bmatrix} = \begin{bmatrix} 20 \\ 20 \end{bmatrix}$. Additionally, I would imagine that the improvements of people who improve a lot would be more similar to each compared compared to the improvements of people who improve a little or even get worse, and so the covariance matrix should have negative off-diagonals.
+
+I experimented with a few different versions of the covariance matrix and came up with one I like: $\Sigma = \begin{bmatrix} 200 & -25 \\ -25 & 25 \end{bmatrix}$
+
+```{r}
+
+set.seed(123456)
+X <- MASS::mvrnorm(1e3, mu = c(20, 20), Sigma = matrix(c(200, -25, -25, 25), ncol = 2))
+
+plot(X[, 1], X[, 2], col = 'steelblue', pch = 19,
+     xlab = expression(mu), ylab = expression(sigma), axes = FALSE)
+draw_axes()
+
+```
+
+### (c)
+
+A weakly informative prior.
+
+A weakly informative prior might be two independent priors on $\mu$ and $\sigma$, with both means 20 and standard deviations 100 and 10.
+
+# Chapter 6
+
+## 6.1 Posterior predictive checking
+
+### (a)
+
+Using the data from the SAT coaching experiments, conduct a posterior predictive check for the model which assumed identical effects in all eight schools. Specifically, do a comparison to expected order statistics $(26, 19, 14, 10, 6, 2, -3, -9)$. Does the model fit these order statstics?
+
+We have the following posterior for $\theta$ and likelihood:
+
+$$\theta \lvert y \sim \text{Normal}(7.7, 4.1^2)$$
+$$y \lvert \theta \sim \text{Normal}(\theta, \sigma_j^2)$$
+
+```{r}
+
+y <- c(28, 8, -3, 7, -1, 1, 18, 12)
+y <- sort(y)
+sigma <- c(15, 10, 16, 11, 9, 11, 10, 18)
+theta <- rnorm(1000, 7.7, 4.1)
+
+yrep <- sapply(theta, function(x) rnorm(8, x, sd = sigma))
+yrep <- apply(yrep, 2, sort)
+
+rowMeans(yrep)
+
+```
+
+The order statistic means from the posterior predictive check are very similar to the expected order statistics. Thus, the model seems to fit this aspect of the data.
+
+### (b)
+
+Based on theory, it seems unlikely that the intervention would be implemented equally well across all 8 schools & that the effect would be the same.
+
+## 6.2 Model checking: Airline fatalities
+
+In exercise **2.13**, the counts of airline fatalities in 1976-1985 were fitted to four different Poisson models 
+
+(I actually only fitted the first two models because the other two were the same but with different data, I will do the same here)
+
+For each of the models, set up a posterior predictive test quantities to check the following assumptions: (1) independent Poisson distributions, (2) no trend over time. Display the discrepancies graphically and give p-values.
+
+To test (1), we can compute autocorrelations in the sample and posterior predictive draws. To test (2), we can compute the linear trend with year in posterior predictive draws & compare to the sample. 
+
+```{r}
+year <- 1976:1985
+accidents <- c(24, 25, 31, 31, 22, 21, 26, 20, 16, 22)
+deaths <- c(734, 516, 754, 877, 814, 362, 764, 809, 223, 1066)
+death_rate <- c(0.19, 0.12, 0.15, 0.16, 0.14, 0.06, 0.13, 0.13, 0.03, 0.15)
+miles <- deaths / death_rate 
+
+theta_s1 <- rgamma(1e3, sum(accidents), length(accidents))
+theta_s2 <- rgamma(1e3, sum(accidents), 
+                  length(accidents) * mean(miles) / 1e3)
+
+postpred_draws1 <- matrix(rpois(10 * 1000, theta_s1), ncol = 1000)
+postpred_draws2 <- matrix(rpois(10 * 1000, theta_s2 * mean(miles) / 1e3), ncol = 1000)
+
+# Autocorrelation
+ac_sample <- stats::acf(accidents, plot = FALSE)$acf
+ac_draws1 <- apply(postpred_draws1, 2, 
+                   function(x) stats::acf(x, plot = FALSE)$acf)
+ac_draws2 <- apply(postpred_draws2, 2, 
+                   function(x) stats::acf(x, plot = FALSE)$acf)
+
+par(mfrow = c(1, 2))
+plot(1:10, seq(-1, 1, length = 10), type = 'n', axes = FALSE,
+     xlab = 'Lag', ylab = 'Autocorrelation', main = 'Model 1')
+for (i in 1:10) points(rep(i, 1000), ac_draws1[i, ], pch = 19,
+                       col = colt('steelblue', 0.1))
+points(1:10, ac_sample, pch = 19, col = 'firebrick')
+draw_axes()
+
+plot(1:10, seq(-1, 1, length = 10), type = 'n', axes = FALSE,
+     xlab = 'Lag', ylab = 'Autocorrelation', main = 'Model 2')
+for (i in 1:10) points(rep(i, 1000), ac_draws2[i, ], pch = 19,
+                       col = colt('steelblue', 0.1))
+points(1:10, ac_sample, pch = 19, col = 'firebrick')
+draw_axes()
+
+ac_pvals1 <- numeric(10)
+ac_pvals2 <- numeric(10)
+
+for (i in 1:10) {
+  ac_pvals1[i] <- mean(ac_sample[i] > ac_draws1[i, ])
+  ac_pvals2[i] <- mean(ac_sample[i] > ac_draws2[i, ])
+} 
+
+# Drop lag 0 autocorrelation
+1 - ac_pvals1[-1]
+1 - ac_pvals2[-1]
+
+```
+
+The lag 1 autocorrelations seemed to be a bit unusually high in our sample compared with the posterior predictive draws, however, the other lags seemed completely reasonable within the posterior predictive draws.
+
+```{r}
+
+slope_sample <- coef(lm(accidents ~ year))
+slope_draws1 <- apply(postpred_draws1, 2, function(x) coef(lm(x ~ year)))
+slope_draws2 <- apply(postpred_draws2, 2, function(x) coef(lm(x ~ year)))
+
+par(mfrow = c(1, 2))
+plot(year, accidents, type = 'n', axes = FALSE, xlab = 'Year', 
+     ylab = '# accidents', main = 'Model 1')
+for (i in 1:100) abline(a = slope_draws1[1, i], b = slope_draws1[2, i], 
+                        col = colt('steelblue', 0.2))
+abline(slope_sample[1], slope_sample[2], col = 'firebrick')
+draw_axes()
+
+plot(year, accidents, type = 'n', axes = FALSE, xlab = 'Year', 
+     ylab = '# accidents', main = 'Model 2')
+for (i in 1:100) abline(a = slope_draws2[1, i], b = slope_draws2[2, i], 
+                        col = colt('steelblue', 0.2))
+abline(slope_sample[1], slope_sample[2], col = 'firebrick')
+draw_axes()
+
+mean(slope_sample[2] > slope_draws1[2, ])
+mean(slope_sample[2] > slope_draws2[2, ])
+
+```
+
+The slope observed in the data did not seem to be too suspiciously unusual compared with those obtained from posterior predictive draws.
+
+# Chapter 10
+
+## 10.1 Number of simulation draws
+
+Suppose that the scalar varaible $\theta$ is approximately normally distributed in a posterior distribution that is summarized by $n$ independent simultion draws. How large does $n$ have to be so that the 2.5% and 97.5% quantiles of $\theta$ are specified to an accuracy of $0.1 \; \text{sd}(\theta \lvert y)$?
+
+### (a)
+
+Figure this out mathematically, without using simulation.
+
+According to [Wikipedia](https://en.wikipedia.org/wiki/Quantile#Estimating_quantiles_from_a_sample), the sampling variance of a quantile $p$ is equal to $\frac{p(1 - p)}{N f_X(x_{p})^2}$. Thus we have:
+
+$$\sqrt{\frac{p(1 - p)}{S \cdot p(\theta_{p} \lvert y)^2}} = 0.1 \cdot \text{sd}(\theta \lvert y)$$
+$$\implies \frac{p(1-p)}{S \cdot p(\theta_p \lvert y)^2} = 0.01 \cdot Var(\theta \lvert y)$$
+$$\implies S = \frac{p(1 - p)}{0.01 \cdot Var(\theta \lvert y) \cdot p(\theta_p \lvert y)^2}$$
+
+We can now plug in the specific values of $p = (0.025, 0.975)$ (both will actually yield the same numerator), however we also need to know the posterior variance and the posterior density at the (true) quantile. For example, if the posterior mean is $E(\theta \lvert y) = 0$, the posterior variance is $\text{Var}(\theta \lvert y) = 1$, then $\theta_{0.025} = -1.96$ and $p(\theta_p \lvert y)^2 = 0.0584^2 = 0.00341$. Then:
+
+$$S = \frac{0.025 \cdot(1 - 0.025)}{0.01 \cdot 1 \cdot 0.00342} \approx 714$$
+```{r}
+(0.025 * (1 - 0.025)) / (0.01 * dnorm(qnorm(0.025))^2)
+```
+
+(the probability should be the same for the 97.5% quantile because of the symmetry of the normal distribution)
+
+### (b)
+
+Check you answer using simulation and show your results.
+
+```{r}
+
+theta_draws <- matrix(rnorm(714 * 1000, 0, 1), ncol = 1000)
+theta_quants <- apply(theta_draws, 2, quantile, c(0.025, 0.975))
+
+apply(theta_quants, 1, sd)
+
+```
+
+The variance of the draws was close to 0.1, which is $0.1 \cdot 1 = 0.1 \cdot \text{sd}(\theta \lvert y)$, so the method seems to work. The only issue is that often we might not know the posterior mean and variance (estimating them is the reason why we're doing Bayesian statistics in the first place), and the posterior density at the quantile, so we might have to rely approximations (e.g. plugging-in our estimates for those quantities).
+
+## 10.2 Number of simulation draws
+
+Suppose you are intested in inference for the parameters in a multivariate posterior distribution $p(\theta \lvert y)$. You draw 100 independent values $\theta$ from the posterior distribution of $\theta$ and find that the posterior density for $\theta_1$ is approximately normal with mean of about 8 and standard deviation of about 4.
+
+### (a)
+
+Using the average of the 100 draws of $\theta_1$ to estimate the posterior mean $E(\theta \lvert y)$, what is the approximate standard deviation due to simulation variability?
+
+The classical result for the standard error of the sample mean is: $\sigma_{\bar x} = \sqrt{\frac{\sigma^2}{N}}$
+
+Therefore, the naive approximation of the Monte Carlo error (the standard deviation due to simulation variability) will be:
+
+$$\sqrt{\frac{4^2}{100}} = \frac{4}{10}$$
+### (b)
+
+About how many simulation draws would you need to reduce the standard deviation of the posterior mean to 0.1 (thus justifying the presentation of results to one decimal place)?
+
+$$\sqrt{\frac{4^2}{S}} = 0.1$$
+$$\implies \frac{4^2}{S} = 0.01$$
+$$\implies \frac{1}{S} = \frac{0.01}{4^2}$$
+$$\implies S = \frac{4^2}{0.01} = 1600$$
+```{r}
+
+theta_draws <- matrix(rnorm(1600 * 1000, 8, 4), ncol = 1000)
+sd(colMeans(theta_draws))
+
+```
+
+### (c)
+
+A more usual summary of the posterior distribution of $\theta_1$ is a 95% central posterior interval. Based on the data from 100 draws, what are the approximate standard deviations of the estimated 2.5% and 97.5% quantiles of the posterior distribution?
+
+Using the results we got in the previous question, we found the expression of the standard deviation of the quantiles to be: $$\sqrt{\frac{p(1 - p)}{S \cdot p(\theta_{p} \lvert y)^2}}$$
+
+Now, pluggin in the appropriate values:
+
+$$\sqrt{\frac{0.025 \cdot (1 - 0.025)}{100 \cdot 0.0146^2}} = 1.0685$$
+```{r}
+sqrt((0.025 * (1 - 0.025)) / (100 * dnorm(qnorm(0.025, 8, 4), 8, 4)^2))
+```
+
+I.e. the Monte Carlo standard error is close to 1 standard deviation. 
+
+### (d)
+
+About how many simulation draws would you need to reduce the simulation standard deviations of the 2.5% and 97.5% quantiles to 0.1?
+
+Again, using the same technique as in the previous exercise, we have: $S = \frac{p(1 - p)}{0.1 \cdot p(\theta_p \lvert y)^2}$
+
+```{r}
+(0.025 * (1 - 0.025)) / (0.01 * dnorm(qnorm(0.025, 8, 4), 8, 4)^2)
+```
+
+I.e. we'd need around 11,417 draws. 
+
+### (e)
+
+In the eight-schools example in Section 5.5, we simulated 200 posterior draws. What are the approximate simulation standard deviations of the 2.5% and 97.5% quantiles for school A in table 5.3?
+
+From exercise 5.3, I got the marginal posterior mean for the effect in school A to be 11.7 with a standard deviation of 10.24. Using 200 samples, that would make the Monte Carlo error for the quantiles: 
+
+```{r}
+sqrt((0.025 * (1 - 0.025)) / (200 * dnorm(qnorm(0.025, 11.7, 10.24), 11.7, 10.24)^2))
+```
+
+I.e. almost 2 points.
+
+### (f)
+
+Why was it not necessary, in practice, to simulate more than 200 draws for the SAT coaching example? 
+
+I suppose that in the example, we weren't really interested in estimating the extreme quantiles of the effects in individual schools, but rather, the posterior means and probabilities that one school was better than the others, which should be more stable.
+
+
+```{r}
+(0.025 * (1 - 0.025)) / (0.01 * dnorm(qnorm(0.025, 8, 4), 8, 4)^2)
+```
+
+## 10.3 Posterior computations for Binomial model
+
+Suppose $y_1 \sim \text{Binomial}(n_1, p_1)$ is the number of patients succesfully treated under an experimental new drug, and $y_2 \sim \text{Binomial}(n_2, p_2)$ is the number of patients treated under the standard treatment. Assume that $y_1$ and $y_2$ are independent and assume independent Beta prior densities for the two probabilities of success. Let $n_1 = 10, y_1 = 6$, and $n_20 = 20, y_2 = 10$. Repeat the following for several different beta prior specifications:
+
+I will repeat the computations for the following choice of priors: $\text{Beta}(1, 1)$ (uniform), $\text{Beta}(1/2, 1/2)$ (Jeffrey's prior for Binomial), and $\text{Beta}(10, 10)$ (somewhat informative prior)
+
+### (a)
+
+Use simulation to find a 95% posterior interval for $p_1 - p_2$ and the posterior probability that $p_1 > p_2$.
+
+```{r}
+
+priors <- matrix(c(1, 1, 1/2, 1/2, 10, 10), nrow = 2)
+
+n1 <- 10; y1 <- 6
+n2 <- 20; y2 <- 10
+
+post_pars1 <- priors + c(y1, n1 - y1)
+post_pars2 <- priors + c(y2, n2 - y2)
+
+post1 <- apply(post_pars1, 2, function(x) rbeta(1000, x[1], x[2]))
+post2 <- apply(post_pars2, 2, function(x) rbeta(1000, x[1], x[2]))
+
+post_diff <- post1 - post2
+post_gt <- post1 > post2
+
+apply(post_diff, 2, quantile, c(0.025, 0.975))
+colMeans(post_gt)
+
+```
+
+### (b)
+
+Numerically intergrate to estimate the posterior probability that $p_1 > p_2$.
+
+I first compute the joint density of $p_1$ and $p_2$ across a finite grid of values, normalize so that the posterior sums to one, throw out all values where $p_1 < p_2$, and finally sum up the probability in this region:
+
+```{r}
+
+p <- seq(0, 1, length = 100)
+post_joint <- outer(p, p, function(x, y) dbeta(x, 7, 5) * dbeta(y, 11, 11))
+post_joint <- post_joint / sum(post_joint)
+
+post_diff2 <- post_joint[row(post_joint) > col(post_joint)]
+sum(post_diff2)
+
+```
+
+## 10.4 Rejection sampling
+
+### (a)
+
+Prove that rejection sampling gives draws from $p(\theta \lvert y)$
+
+Let $\theta^*$ be a proposed draw from $g(\theta)$ and $U$ a draw from a $\text{Uniform}(0, 1)$ distribution. We accept $\theta$ if $u \leq \frac{p(\theta \lvert y)}{M \cdot g(\theta)}$, where $M$ is the constant that assures that $g(\theta)$ is the blanketing density of $p(\theta \lvert y)$.
+
+Now:
+
+$$P(\theta^* \leq \theta \lvert \theta^* \text{ is accepted}) = \frac{P(\theta^* \leq \theta, \theta^* \text{ is accepted})}{P(\theta^* \text{ is accepted})}$$
+$$= \frac{P(\theta^* \leq \theta, u \leq \frac{p(\theta^* \lvert y)}{M \cdot g(\theta^*)})}{P(u \leq \frac{p(\theta^* \lvert y)}{M \cdot g(\theta^*)})}$$
+
+Now the numerator is:
+
+$$P \Bigg( \theta^* \leq \theta, u \leq \frac{p(\theta^* \lvert y)}{M \cdot g(\theta^*)} \Bigg) = \int_{-\infty}^\theta P \bigg(u \leq \frac{p(\theta^* \lvert y)}{M \cdot g(\theta^*)} \bigg) g(\theta^*) d\theta^*$$
+$$= \int_{-\infty}^\theta \frac{p(\theta^* \lvert y)}{M \cdot g(\theta^*)} g(\theta^*) d\theta^*$$
+$$= \frac{1}{M} \int_{-\infty}^\theta p(\theta^* \lvert y) g(\theta^*) d\theta^* = \frac{1}{M} \cdot F(\theta)$$
+
+Likewise, for the denominator:
+
+$$P \Bigg(u \leq \frac{p(\theta^* \lvert y)}{M \cdot g(\theta^*)} \Bigg) = \int_{-\infty}^\infty P \Bigg(u \leq \frac{p(\theta^* \lvert y)}{M \cdot g(\theta^*)} \Bigg) g(\theta^*) d \theta^*$$
+$$= \int_{-\infty}^\infty \frac{p(\theta^* \lvert y)}{M \cdot g(\theta^*)} g(\theta^*) d \theta^*$$
+$$= \frac{1}{M}$$
+
+Therefore: 
+
+$$P(\theta^* \leq \theta \lvert \theta^* \text{ is accepted}) = \frac{\frac{1}{M} \cdot F(\theta)}{\frac{1}{M}} = F(\theta)$$
+
+### (b)
+
+Why is the boundedness condition necessary for rejection sampling?
+
+We need $g(\theta) > 0$ wherever $p(\theta \lvert y) > 0$ (i.e. we need some non-zero sampling probability for sampling from all of the regions of $p(\theta \lvert y)$) and we also need $\frac{p(\theta \lvert y)}{M \cdot g(\theta)} \leq 1$, because otherwise we're not guaranteed to sample enough from regions of high posterior density, in proportion to other regions.
+
+## 10.5 Rejection sampling and importance sampling
+
+Consider the model $y_j \sim \text{Binomial}(n_j, \theta_j)$ where $\theta_j = \text{logit}^{-1}(\alpha + \beta x_j)$ for $j = 1, 2, \ldots J$, with independent prior distributions $\alpha \sim t_4 (0, 2^2)$ and $\beta \sim t_4(0, 1)$. Suppose $J = 10$, where $x_j$ values are randomly drawn from $\text{Uniform}(0, 1)$ distribution and $n_j \sim \text{Poisson}^+(5)$ (Poisson distribution restricted to positive values).
+
+### (a)
+
+Sample a dataset at random from the model
+
+```{r}
+
+set.seed(12345)
+J <- 10
+n <- rpois(J, 5)
+x <- runif(J)
+
+alpha <- 2 * rt(1, 4)
+beta <- rt(1, 4)
+
+eta <- alpha + beta * x
+theta <- 1 / (1 + exp(-eta))
+
+y <- rbinom(J, n, theta)
+
+```
+
+### (b)
+
+Use rejection sampling to get 1,000 independent posterior draws from $(\alpha, \beta)$.
+
+The student-t distribution has the following pdf:
+
+$$f_X(x) = \frac{\Gamma(\frac{\nu + 1}{2})}{\sqrt{\nu \pi} \Gamma (\frac{\nu}{2})} (1 + \frac{x^2}{\nu})^{-\frac{\nu + 1}{2}}$$
+
+Thus:
+
+$$p(\beta) = \frac{\Gamma(\frac{4 + 1}{2})}{\sqrt{4 \pi} \cdot \Gamma (\frac{4}{2})} (1 + \frac{\beta^2}{4})^{-\frac{4 + 1}{2}}$$
+$$= \frac{\frac{3}{4} \sqrt{\pi}}{2 \sqrt{\pi} \cdot 1} (1 + \frac{\beta^2}{4})^{-\frac{5}{2}} = \frac{3}{8}(1 + \frac{\beta^2}{4})^{-\frac{5}{2}}$$
+Now to find $p(\alpha)$, we can just apply change of variable method:
+
+$$\alpha = \alpha(\beta) = 2 \beta$$
+$$\beta = \beta(\alpha) = \frac{1}{2} \alpha$$
+$$ \Bigg\lvert \frac{\partial \beta}{\partial \alpha} \Bigg\lvert = \Bigg\lvert \frac{1}{2} \Bigg\lvert$$
+$$p(\alpha) = \frac{3}{8}(1 + \frac{(\frac{\alpha}{2})^2}{4})^{-\frac{5}{2}} \cdot \frac{1}{2} = \frac{3}{16}(1 + \frac{\alpha^2}{16})^{-\frac{5}{2}}$$
+
+Now, the likelihood $p(y_j \lvert n_j, \theta_j)$ is just a simple binomial likelihood:
+
+$$p(y_j \lvert n_j, \theta_j) \propto \theta_j^{y_j} (1 - \theta_j)^{n_j - y_j}$$
+
+Expressed in terms of $\alpha$ and $\beta$:
+
+$$p(y_j \lvert \alpha, \beta, x_j) \propto \bigg( \frac{1}{1+ e^{-(\alpha + \beta x_j)}} \bigg)^{y_j} \bigg( \frac{e^{-(\alpha + \beta x_j)}}{1+ e^{-(\alpha + \beta x_j)}} \bigg)^{n_j - y_j}$$
+
+So then the posterior is:
+
+$$p(\alpha, \beta \lvert y, x) \propto (1 + \frac{\beta^2}{4})^{-\frac{5}{2}}(1 + \frac{\alpha^2}{16})^{-\frac{5}{2}} \prod_{j=1}^J \bigg( \frac{1}{1+ e^{-(\alpha + \beta x_j)}} \bigg)^{y_j} \bigg( \frac{e^{-(\alpha + \beta x_j)}}{1+ e^{-(\alpha + \beta x_j)}} \bigg)^{n_j - y_j}$$
+As the envelope distribution, I used a bivariate normal distribution with independent components. Since the parameters in the posterior were correlated (i.e. the posterior had a diagonal shape) I had to play around with different values of $\mu$'s and $\sigma$'s to make sure that the posterior wouldn't have much greater relative density to that of the blanketing density.
+
+```{r}
+
+d <- n - y
+
+lpost <- function(theta) {
+  a <- theta[1]; b <- theta[2]
+  -5/2 * log(1 + b^2/ 4) - 5/2 * log(1 + a^2/16) +
+    sum(y * (a + b * x) - n * log(1 + exp(a + b * x)))
+}
+
+lprop <- function(theta) {
+  a <- theta[1]; b <- theta[2]
+  dnorm(a, mus[1], sds[1], log = TRUE) + 
+  dnorm(b, mus[2], sds[2], log = TRUE)
+}
+
+# Find maximum of posterior and proposal density (used to normalize later)
+post_mode <- optim(c(-1, 0), lpost, control = list(fnscale = -1))
+max_post <- post_mode$value
+
+mus <- post_mode$par
+sds <- c(0.5, 1)
+
+max_prop <- lprop(mus)
+
+a <- seq(-2, 1, length = 200)
+b <- seq(-2.5, 3, length = 200)
+
+post <- matrix(0, ncol = length(a), nrow = length(b))
+prop_dist <- post
+
+for (i in seq_along(a)) {
+  for (j in seq_along(b)) {
+    post[i, j] <- lpost(c(a[i], b[j]))
+    prop_dist[i, j] <- dnorm(a[i], mus[1], sds[1], log = TRUE) + 
+      dnorm(b[j], mus[2], sds[2], log = TRUE)
+  }
+}
+
+contour(a, b, exp(post), col = 'firebrick', 
+        drawlabels = FALSE, axes = FALSE,
+        xlab = expression(alpha), ylab = expression(beta))
+contour(a, b, exp(prop_dist), add = TRUE, col = 'seagreen',
+        drawlabels = FALSE)
+draw_axes()
+
+post_ratio <- function(theta) {
+  lpost(theta) - lprop(theta) - max_post - max_prop
+}
+
+M <- optim(c(-1, 0), post_ratio,
+      lower = c(-2, -2.5), upper = c(1, 3),
+      method = 'L-BFGS-B',
+      control = list(fnscale = -1))$value
+
+n_samples <- 1000
+n_sampled <- 0
+ab_samples <- matrix(0, ncol = 2, nrow = n_samples)
+
+while (n_sampled < n_samples) {
+  
+  prop <- c(rnorm(1, mus[1], sds[1]), rnorm(1, mus[2], sds[2]))
+  
+  prop_dens <- lprop(prop) - max_prop
+  post_dens <- lpost(prop) - max_post
+  
+  if (log(runif(1)) < post_dens - prop_dens - M) {
+    ab_samples[n_sampled, ] <- prop
+    n_sampled <- n_sampled + 1
+  } 
+}
+
+plot(ab_samples[, 1], ab_samples[, 2], 
+     col = colt('steelblue', 0.25), pch = 19, axes = FALSE, 
+     xlab = expression(alpha), ylab = expression(beta))
+contour(a, b, exp(post), col = 'firebrick', 
+        add = TRUE, drawlabels = FALSE)
+draw_axes()
+
+```
+
+### (c)
+
+Approximate the posterior density for $(\alpha, \beta)$ by a normal centered at the posterior mode with covariance matrix fit to the curvature at the mode.
+
+Now, to make things a bit more interesting, I will use the Newton-Raphson algorithm to get the posterior mode. First I need all of the first & second derivatives of the posterior density:
+
+$$\log p(\alpha, \beta \lvert y_j, x_j) = -\frac{5}{2} \cdot \log(1 + \frac{\alpha^2}{16}) -\frac{5}{2} \cdot \log(1 + \frac{\beta^2}{4}) + \sum_{j=1}^J y_j (\alpha + \beta x_j) - n_j \cdot \log(1 + e^{\alpha + \beta x_j})$$
+
+$$\frac{\partial \log p(\alpha, \beta \lvert y_j, x_j)}{\partial \alpha} = -\frac{5}{2} \cdot \frac{1}{1 + \frac{\alpha^2}{16}} \cdot \frac{\alpha}{8} + \sum_{j=1}^J y_j - n_j \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}} = -\frac{5\alpha}{16 + \alpha^2} + \sum_{j=1}^J y_j - n_j \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}}$$
+$$\frac{\partial \log p(\alpha, \beta \lvert y_j, x_j)}{\partial \beta} = -\frac{5}{2} \cdot \frac{1}{1 + \frac{\beta^2}{4}} \cdot \frac{\beta}{2} + \sum_{j=1}^J y_jx_j - n_jx_j \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}} = -\frac{5 \beta}{4 + \beta^2} + \sum_{j=1}^J y_jx_j - n_jx_j \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}}$$
+$$\frac{\partial^2 \log p(\alpha, \beta \lvert y_j, x_j)}{\partial \alpha^2} = -\frac{5(16 + \alpha^2) - 2\alpha \cdot 5 \alpha}{(16 + \alpha^2)^2} - \sum_{j=1}^J  n_j \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}} \cdot \frac{1}{1 + e^{\alpha + \beta x_j}} = -\frac{80 - 5 \alpha^2}{(16 + \alpha^2)^2} - \sum_{j=1}^J  n_j \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}} \cdot \frac{1}{1 + e^{\alpha + \beta x_j}}$$
+$$\frac{\partial^2 \log p(\alpha, \beta \lvert y_j, x_j)}{\partial \beta^2} = -\frac{5(4 + \beta^2) - 2\beta \cdot 5 \beta}{(4 + \beta^2)^2} - \sum_{j=1}^J n_jx_j^2 \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}} \cdot \frac{1}{1 + e^{\alpha + \beta x_j}} = -\frac{20 - 10 \beta^2}{(4 + \beta^2)^2} - \sum_{j=1}^J n_jx_j^2 \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}} \cdot \frac{1}{1 + e^{\alpha + \beta x_j}}$$
+$$\frac{\partial^2 \log p(\alpha, \beta \lvert y_j, x_j)}{\partial \alpha \partial \beta} = -\sum_{j=1}^J n_j x_j \cdot \frac{e^{\alpha + \beta x_j}}{1 + e^{\alpha + \beta x_j}} \frac{1}{1 + e^{\alpha + \beta x_j}}$$
+```{r}
+
+ilogit <- function(a, b, x) exp(a + b * x) / (1 + exp(a + b * x))
+
+da <- function(a, b) - (5 * a) / (16 + a^2) + sum(y - n * ilogit(a, b, x))
+db <- function(a, b) -(5 * b) / (4 + b^2) + sum(y * x - n * x * ilogit(a, b, x))
+da2 <- function(a, b) -(80 - 5 * a^2) / (16 + a^2)^2 - sum(n * ilogit(a, b, x) * (1 - ilogit(a, b, x)))
+db2 <- function(a, b) -(20 - 5 * b^2) / (4 + b^2)^2 - sum(n * x^2 * ilogit(a, b, x) * (1 - ilogit(a, b, x)))
+dab <- function(a, b) -sum(n * x * ilogit(a, b, x) * (1 - ilogit(a, b, x)))
+
+theta_old <- c(Inf, Inf)
+theta_new <- c(0, 0)
+eps <- 1e-5
+n_iter <- 0
+
+while(any(abs(theta_old - theta_new) > eps)) {
+  
+  u <- c(da(theta_new[1], theta_new[2]), db(theta_new[1], theta_new[2]))
+  H <- matrix(c(
+    da2(theta_new[1], theta_new[2]),
+    dab(theta_new[1], theta_new[2]),
+    dab(theta_new[1], theta_new[2]),
+    db2(theta_new[1], theta_new[2])), ncol = 2)
+  
+  theta_old <- theta_new
+  theta_new <- theta_old - solve(H) %*% u
+  n_iter <- n_iter + 1
+  
+}
+
+covmat <- matrix(c(
+    da2(theta_new[1], theta_new[2]),
+    dab(theta_new[1], theta_new[2]),
+    dab(theta_new[1], theta_new[2]),
+    db2(theta_new[1], theta_new[2])),
+    ncol = 2)
+
+n_iter
+
+ab_samples2 <- MASS::mvrnorm(1e3, theta_new, solve(-covmat))
+
+plot(ab_samples2[, 1], ab_samples2[, 2], pch = 19, col = colt('steelblue', 0.25),
+     axes = FALSE, xlab = expression(alpha), ylab = expression(beta))
+contour(a, b, exp(post), col = 'firebrick', 
+        add = TRUE, drawlabels = FALSE)
+draw_axes()
+
+```
+
+### (d)
+
+Take 1,000 draws from two-dimensional $t_4$ distribution with that center and scale matrix and use importance sampling to estimate $E(\alpha \lvert y)$ and $E(\beta \lvert y)$.
+
+```{r}
+
+ab_samples3 <- t(t(mvtnorm::rmvt(1e3, solve(-covmat), 4)) +
+                   as.numeric(theta_new))
+
+weights <- apply(ab_samples3, 1, function(x) lpost(x)) -
+  apply(t(t(ab_samples3) - as.numeric(theta_new)), 1, 
+        function(x) mvtnorm::dmvt(x, sigma = solve(-covmat)))
+
+cbind(
+  colMeans(ab_samples),
+  colMeans(ab_samples2),
+  colSums(t(t(ab_samples3) * exp(weights))) / sum(exp(weights))
+)
+
+```
+
+### (e)
+
+Compute an estimate of effective sample size for importance sampling.
+
+$$S_{eff} = \frac{1}{\sum_{s=1}^S (\tilde w (\theta^s))^2}$$
+
+```{r}
+
+weights_normalized <- weights / sum(weights)
+1 / sum(weights_normalized^2)
+
+```
+
+## 10.6 Importance sampling with well-behaved weights
+
+Consider a multivariate posterior $p(\theta \lvert y)$ which we wish to approximate and then calculate the moments of, using importance sampling from an unnormalized density $g(\theta)$. Suppose the posterior distribution is normal, and the approximation is $t_3$, with mode and curvature matched to the posterior density.
+
+### (a)
+
+Draw a sample of size $S = 100$ from the approximate density and compute the importance ratios. Plot histogram of the log importance ratios.
+
+```{r}
+
+mu <- 5
+sigma <- 10
+
+dens_norm <- function(x, dens_fun) {
+  dens <- dens_fun(x)
+  dens - max(dens)
+}
+
+samples <- sigma * rt(100, 3) + mu
+dens1 <- dens_norm(samples, function(x) dnorm((x - mu) / sigma, 0, 1, log = TRUE))
+dens2 <- dens_norm(samples, function(x) dt((x - mu) / sigma, 3, log = TRUE))
+weights <- exp(dens1) / exp(dens2)
+
+hist(log(weights), axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(log(tilde(w))), ylab = 'Count')
+draw_axes()
+
+```
+
+### (b)
+
+Estimate $E(\theta \lvert y)$ and $Var(\theta \lvert y)$ using importance sampling. Compare to the true values.
+
+```{r}
+
+# E(X)
+(mu_hat <- sum(samples * weights) / sum(weights))
+# Var(X)
+(var_hat <- (sum((samples - mu_hat)^2 * weights) / sum(weights)))
+(sigma_hat <- sqrt(var_hat))
+
+```
+
+### (c)
+
+Repeat (a) and (b) for 10,000 samples.
+
+```{r}
+
+samples2 <- sigma * rt(1e4, 3) + mu
+dens1 <- dens_norm(samples2, function(x) dnorm((x - mu) / sigma, 0, 1, log = TRUE))
+dens2 <- dens_norm(samples2, function(x) dt((x - mu) / sigma, 3, log = TRUE))
+weights2 <- exp(dens1) / exp(dens2)
+
+hist(log(weights2), axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(log(tilde(w))), ylab = 'Count')
+draw_axes()
+
+# E(X)
+(mu_hat2 <- sum(samples2 * weights2) / sum(weights2))
+# Var(X)
+(var_hat2 <- (sum((samples2 - mu_hat2)^2 * weights2) / sum(weights2)))
+(sigma_hat2 <- sqrt(var_hat2))
+
+```
+
+### (d)
+
+Using the sample obtained in (c), compute an estimate of effective sample size.
+
+```{r}
+
+1 / sum((weights2 / sum(weights2))^2)
+
+```
+
+## 10.7 Importance sampling with highly variable weights
+
+Repeat the previous exercise, but with a $t_3$ posterior and a normal approximation. Explain why the estimate of $Var(\theta \lvert y)$ are systematically too low
+
+```{r}
+
+samples <- rnorm(100, mu, sigma)
+dens1 <- dens_norm(samples, function(x) dt((x - mu) / sigma, 3, log = TRUE))
+dens2 <- dens_norm(samples, function(x) dnorm((x - mu) / sigma, 0, 1, log = TRUE))
+weights <- exp(dens1) / exp(dens2)
+
+weights <- (dt((samples - mu) / sigma, 3) / sigma) / 
+  (dnorm((samples - mu) / sigma, 0, 1) / sigma)
+  
+hist(log(weights), axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(log(tilde(w))), ylab = 'Count')
+draw_axes()
+
+# E(X)
+(mu_hat <- sum(samples * weights) / sum(weights))
+# Var(X)
+(var_hat <- (sum((samples - mu_hat)^2 * weights) / sum(weights)))
+(sigma_hat <- sqrt(var_hat))
+
+samples2 <- rnorm(1e4, mu, sigma)
+dens1 <- dens_norm(samples2, function(x) dt((x - mu) / sigma, 3, log = TRUE))
+dens2 <- dens_norm(samples2, function(x) dnorm((x - mu) / sigma, 0, 1, log = TRUE))
+weights2 <- exp(dens1) / exp(dens2)
+
+hist(log(weights2), axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(log(tilde(w))), ylab = 'Count')
+draw_axes()
+
+# E(X)
+(mu_hat2 <- sum(samples2 * weights2) / sum(weights2))
+# Var(X)
+(var_hat2 <- (sum((samples2 - mu_hat2)^2 * weights2) / sum(weights2)))
+(sigma_hat2 <- sqrt(var_hat2))
+
+```
+
+## 10.8 Importance resampling with and without replacement
+
+### (a)
+
+Consider the bioassay example introduced in Section 3.7. Use importance resampling to approximate draws from the posterior distribution of the parameter $(\alpha, \beta)$ using the normal approximation of Section 4.1 as the starting distribution. Sample $S = 10,000$ samples from the approximate distribution, and resample without replacement $k = 1,000$ samples. Compare simulations of $(\alpha, \beta)$ to Figure 3.3b and discuss any discrepancies.
+
+```{r}
+
+# Code copied from Chapter 4
+y <- c(0, 1, 3, 5)
+x <- c(-0.86, -0.3, -0.05, 0.73)
+
+llfun <- function(theta) {
+  a <- theta[1]; b <- theta[2]
+  sum(y * (a + b * x) - 5 * log(1 + exp(a + b * x)))
+  
+}
+
+mode <- optim(c(1, 1), llfun, control = list(fnscale = -1))$par
+
+a <- mode[1]
+b <- mode[2]
+# Second derivaties evaluated at mode
+plpa2 <- -sum( (5 * exp(a + b * x)) / (1 + exp(a + b * x))^2)
+plpab <- -sum( (5 * x * exp(a + b * x)) / (1 + exp(a + b * x))^2)
+plpb2 <- -sum( (5 * x^2 * exp(a + b * x)) / (1 + exp(a + b * x))^2)
+
+I <- matrix(c(plpa2, plpab, plpab, plpb2), ncol = 2)
+var_theta <- -solve(I)
+
+draws_approx <- mvtnorm::rmvnorm(1e4, mode, var_theta)
+post_dens <- apply(draws_approx, 1, llfun)
+post_dens <- post_dens - max(post_dens)
+weights <- exp(post_dens) / mvtnorm::dmvnorm(draws_approx, mode, var_theta)
+
+prob <- weights / sum(weights)
+samples <- draws_approx[sample(1:1e4, 1e3, replace = FALSE, prob = prob), ]
+
+plot(samples[, 1], samples[, 2], pch = 19, col = colt('steelblue', 0.1),
+     axes = FALSE, xlab = expression(alpha), ylab = expression(beta),
+     xlim = c(-4, 10), ylim = c(-10, 40))
+draw_axes()
+
+```
+
+The posterior looks very similar to that in Figure 3.3.
+
+### (b)
+
+Comment on the distribution of simulated importance ratios
+
+```{r}
+
+hist(log(weights), axes = FALSE, main = NULL,
+     col = 'steelblue', border = 'white',
+     xlab = expression(log(tilde(w))), ylab = 'Count')
+draw_axes()
+
+```
+
+The distribution of weights looked well-behaved, with few very very small weights but no big weights.
+
+### (c)
+
+Repeat part (a) using importance sampling with replacement. Discuss how results differ.
+
+```{r}
+
+samples2 <- draws_approx[sample(1:1e4, 1e3, replace = TRUE, prob = prob), ]
+
+plot(samples2[, 1], samples2[, 2], pch = 19, col = colt('steelblue', 0.1),
+     axes = FALSE, xlab = expression(alpha), ylab = expression(beta),
+     xlim = c(-4, 10), ylim = c(-10, 40))
+draw_axes()
+
+```
+
+It looks like that some of the draws with high posterior density were oversampled.
+
+# Chapter 11
+
+## 11.1 Metropolis-Hastings algorithm
+
+Show that the stationary distribution for Metropolis-Hastings algorithm is the target distribution $p(\theta \lvert y)$
+
+## 11.2 Metropolis algorithm
+
+Replicate the computations for the bioassay example of Section 3.7 using the Metropolis algorithm. Be sure to define your starting points & jumping rule. Compute log-densities. Run simulations long enough for approximate convergence.
+
+```{r}
+
+y <- c(0, 1, 3, 5)
+x <- c(-0.86, -0.3, -0.05, 0.73)
+
+llfun <- function(theta) {
+  a <- theta[1]; b <- theta[2]
+  sum(y * (a + b * x) - 5 * log(1 + exp(a + b * x)))
+  
+}
+
+n_samples <- 4e3
+n_sampled <- 1
+
+draws <- matrix(0, nrow = n_samples, ncol = 2)
+curr <- c(1, 10)
+draws[1, ] <- curr
+
+while (n_sampled < n_samples) {
+  
+  prop <- curr + c(rnorm(1, 0, 1), rnorm(1, 0, 5))
+  prop_dens <- llfun(prop)
+  curr_dens <- llfun(curr)
+  
+  if (log(runif(1)) < prop_dens - curr_dens) {
+    draws[n_sampled + 1, ] <- prop
+    curr <- prop
+  } else {
+    draws[n_sampled + 1, ] <- curr
+  }
+  n_sampled <- n_sampled + 1
+}
+
+plot(draws[, 1], type = 'l', col = 'steelblue', ylab = expression(alpha))
+plot(draws[, 1], type = 'l', col = 'steelblue', ylab = expression(beta))
+
+plot(draws[, 1], draws[, 2], col = colt('steelblue', 0.1), pch = 19,
+     xlab = expression(alpha), ylab = expression(beta))
+
+```
+
+## 11.3 Gibbs sampling
+
+Table 11.4 contains quality control measurements from 6 machines in a factory. Quality control measurements are expensive and time consuming so only 5 measurements were done for each machine. In addition to the existing machines, we are interested in the quality of another (seventh) machine. Implement a separate, a pooled, and a hierarchical Gaussian model with common variance described in Section 11.6. Run simulations long enough for approximate convergence. Using each of three models - separate, pooled, and hierarchical - report: (i) the posterior distribution of the mean of the quality measurements of the sixth machine, (ii) the predictive distribution for another quality measurement of the sixth machine, and (iii) the posterior distribution of the mean of the quality of the measurement of the sevent machine.
+
+I'll be using the conjugate normal prior for the separate and pooled cases.
+
+```{r}
+
+machine <- rep(1:6, each = 5)
+measurement <- c(83, 92, 92, 46, 67, 117, 109, 114, 104, 87,
+                 101, 93, 92, 86, 67, 105, 119, 116, 102, 116,
+                 79, 97, 103, 79, 92, 57, 92, 104, 77, 100)
+
+plot(jitter(machine, 0.5), measurement, pch = 19, col = sapply(machine, colt, 0.5),
+     xlab = 'Machine', ylab = 'Measurement', axes = FALSE)
+draw_axes()
+
+rinvchisq <- function(n, df, scale = 1) (df * scale) / rchisq(n, df) 
+
+mu_0 <- 100
+sigma_0 <- 5
+nu_0 <- 5
+k_0 <- 5
+
+y <- measurement
+
+sample_gibbs <- function(n_samples, y) {
+  
+  n <- length(y)
+  mu_n <- (k_0 / (k_0 + n)) * mu_0 + (n / (k_0 + n)) * mean(y)
+  k_n <- k_0 + n
+  nu_n <- nu_0 + n
+  
+  s2 <- var(y)
+  sigma_n <- sqrt(((nu_0 * sigma_0^2) + (n - 1) * s2 + (k_0 * n) / 
+                     (k_0 + n) * (mean(y) - mu_0)^2) / nu_n)
+  
+  samples <- matrix(0, nrow = n_samples, ncol = 2)
+  samples[, 2] <- rinvchisq(n_samples, nu_n, sigma_n^2)
+  samples[, 1] <- rnorm(n_samples, mu_n, sqrt(samples[, 2] / k_n))
+  
+  samples
+
+}
+
+separate_samples <- lapply(1:6, function(x) {
+  y <- measurement[machine == x]
+  sample_gibbs(1e3, y)
+})
+
+par(mfrow = c(2, 3), mar = c(3, 3, 1, 1))
+
+for (i in 1:6) {
+  hist(separate_samples[[i]][, 1], main = NULL, 
+       axes = FALSE, xlab = NULL, ylab = NULL, 
+       col = 'steelblue', border = 'white')
+  draw_axes()
+}
+
+pooled_samples <- sample_gibbs(1e3, measurement)
+
+par(mfrow = c(1, 1), mar = c(5, 4, 2, 2))
+
+hist(pooled_samples[, 1], main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+hierarchical_samples <- matrix(0, nrow = 1000, ncol = 9)
+hierarchical_samples[1, ] <- c(mu_0, 10, 10, rnorm(6, 100, 10))
+mu <- mu_0
+
+for (i in 1:999) {
+  
+  theta <- hierarchical_samples[i, 4:9]
+  
+  tau_hat <- sum((theta - mu)^2) / 5
+  mu_hat <- mean(theta)
+  sigma_hat <- mean((measurement - theta[machine])^2)
+  
+  tau <- rinvchisq(1, 5, tau_hat)
+  mu <- rnorm(1, mu_hat, sqrt(tau / 6))
+  sigma <- rinvchisq(1, length(measurement), sigma_hat)
+  
+  theta_hat <- sapply(1:6, function(x) {
+    (mu / tau + 5 * mean(measurement[machine == x]) / sigma) / (1 / tau + 5 / sigma)
+  })
+  var_theta <- 1 / (1 / tau + 5 / sigma)
+  
+  theta <- rnorm(6, theta_hat, sqrt(var_theta))
+  
+  hierarchical_samples[i + 1, ] <- c(mu, tau, sigma, theta)
+  
+}
+
+par(mfrow = c(2, 3), mar = c(3, 3, 1, 1))
+
+for (i in 1:6) {
+  hist(hierarchical_samples[, i + 3], main = NULL, 
+       axes = FALSE, xlab = NULL, ylab = NULL, 
+       col = 'steelblue', border = 'white')
+  draw_axes()
+}
+
+# Plot sds instead of variances
+hierarchical_samples[, 2:3] <- sqrt(hierarchical_samples[, 2:3])
+par(mfrow = c(1, 3), mar = c(3, 3, 1, 1))
+
+for (i in 1:3) {
+  hist(hierarchical_samples[, i], main = NULL, 
+       axes = FALSE, xlab = NULL, ylab = NULL, 
+       col = 'steelblue', border = 'white')
+  draw_axes()
+}
+
+```
+
+### i) Posterior distribution of the mean of the sixth machine
+
+```{r}
+
+par(mfrow = c(1, 3), mar = c(3, 3, 1, 1))
+
+hist(pooled_samples[, 1], main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+hist(separate_samples[[6]][, 1], main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+hist(hierarchical_samples[, 6 + 3], main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+```
+
+### ii) The predictive distribution of another measurement from the sixt machine
+
+```{r}
+
+ypred_pooled <- rnorm(1000, pooled_samples[, 1], sqrt(pooled_samples[, 2]))
+ypred_separate <- rnorm(1000, separate_samples[[6]][, 1], 
+                        sqrt(separate_samples[[6]][, 2]))
+ypred_hierarchical <- rnorm(1000, hierarchical_samples[, 6 + 3], 
+                            hierarchical_samples[, 3])
+
+par(mfrow = c(1, 3), mar = c(3, 3, 1, 1))
+
+hist(ypred_pooled, main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+hist(ypred_separate, main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+hist(ypred_hierarchical, main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+
+```
+
+### iii) The posterior predictive distribution of the mean of the measurements of the sevent machine
+
+This doesn't exist for the separate model, and for the pooled model we could use (incorrectly) the posterior distribution for the overall mean across the machines:
+
+```{r}
+
+mutilde_hierarchical <- rnorm(1000, hierarchical_samples[, 1], 
+                              hierarchical_samples[, 2])
+
+par(mfrow = c(1, 2), mar = c(3, 3, 1, 1))
+
+hist(pooled_samples[, 1], main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+hist(mutilde_hierarchical, main = NULL, 
+     axes = FALSE, xlab = NULL, ylab = NULL, 
+     col = 'steelblue', border = 'white')
+draw_axes()
+
+```
+
+The posterior for the hierarchical model is much wider (as it should be).
 
 # Miscallaneous
+
+
 
 ## M.1 Student-t posterior from normal data & non-informative prior
 
